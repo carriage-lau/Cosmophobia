@@ -50,7 +50,7 @@ protected:
     float FearLevel = 0.0;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
-    float HealthLevel = 100.0;
+    int HitsLeft = 3;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
     bool ArmDisabled = false;
@@ -100,9 +100,6 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
     float SneakMultiplier = 0.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
-    float Health = 100.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
     float StartSpeed = 600.0f;

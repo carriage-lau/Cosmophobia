@@ -8,5 +8,6 @@ enum class EDamageType : uint8
 {
     Torso,
     Arm,
-    Leg
+    Leg,
+    Head
 };

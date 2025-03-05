@@ -137,11 +137,16 @@ void ACosmophobiaCharacter::ToggleFlashlight() {
 }
 
 void ACosmophobiaCharacter::UpdateMovement() {
-	float SpeedMultiplier = 1.0f;
 	if (LegDisabled) {
-		SpeedMultiplier *= 0.5f; // Reduce speed by 50%
+		SetVelocityMultiplierLevel(this->VelocityMultiplier * 0.5); // Reduce speed by 50%
 	}
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * SpeedMultiplier;
+	else if(TorsoDisabled){
+		SetVelocityMultiplierLevel(this->VelocityMultiplier * 0.75); // Reduce speed by 25%
+	}
+	else{
+		SetVelocityMultiplierLevel(this->VelocityMultiplier); // Reset speed to default, redundant logic?
+	}
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * VelocityMultiplier;
 }
 
 void ACosmophobiaCharacter::SetLegDisabled(bool bDisabled) {
@@ -149,26 +154,34 @@ void ACosmophobiaCharacter::SetLegDisabled(bool bDisabled) {
 	UpdateMovement();
 }
 
-void ACosmophobiaCharacter::Tick(float DeltaTime) {
+void ACosmophobiaCharacter::SetTorsoDisabled(bool bDisabled) {
+	TorsoDisabled = bDisabled;
+}
+
+void ACosmophobiaCharacter::SetArmDisabled(bool bDisabled){
+	ArmDisabled = bDisabled;
+}
+
+void ACosmophobiaCharacter::Tick(float DesltaTime) {
 	Super::Tick(DeltaTime);
 	// Custom tick logic
 }
 
 void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 	if(DamageType != EDamageType::Head){
-		ModifyHealth(-33.4f);
+		ModifyHealth(-1);
 		if(DamageType == EDamageType::Torso){
-			// logic for movement speed and item cooldowns
+			SetTorsoDisabled(true);
 		}
 		else if(DamageType == EDamageType::Arm){
-			// logic for stuff
+			SetArmDisabled(true);
 		}
 		else if(DamageType == EDamageType::Leg){
-			// logic for stuff
+			SetLegDisabled(true);
 		}
 	}
 	else{
-		ModifyHealth(-100.0f);
+		ModifyHealth(-3);
 	}
 	// Handle damage based on DamageType
 }
@@ -217,27 +230,32 @@ void ACosmophobiaCharacter::ResumeGame()
 
 void ACosmophobiaCharacter::UpdateMovementSpeed()
 {
-	float SpeedMultiplier = 1.0f;
 	if (bIsSprinting)
 	{
-		SpeedMultiplier *= SprintMultiplier;
+		SetVelocityMultiplierLevel(VelocityMultiplier * SprintMultiplier);
 	}
 	if (bIsSneaking)
 	{
-		SpeedMultiplier *= SneakMultiplier;
+		SetVelocityMultiplierLevel(VelocityMultiplier * SneakMultiplier);
 	}
 	// Ensure the character�s movement component uses the updated speed:
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * SpeedMultiplier;
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * VelocityMultiplier;
 }
 
-void ACosmophobiaCharacter::ModifyHealth(float Delta)
+void ACosmophobiaCharacter::ModifyHealth(int Delta)
 {
-	Health = FMath::Clamp(Health + Delta, 0.0f, 100.0f);
-	if(Delta < 0){
+	HitsLeft = FMath::Clamp(Health + Delta, 0, 3);
+	if(HitsLeft == 3){
+		// resets all UI effects
+	}
+	else if(HitsLeft == 2){
 		// trigger a red UI effect here
 	}
+	else if(HitsLeft == 1){
+		// trigger a bigger red UI effect here
+	}
 	else{
-		// trigger a green healing UI effect here
+		// handle death here
 	}
 	// Trigger any additional effects (e.g. UI update) if health changes.
 }
