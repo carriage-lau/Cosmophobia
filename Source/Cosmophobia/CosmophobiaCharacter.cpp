@@ -118,12 +118,26 @@ void ACosmophobiaCharacter::Look(const FInputActionValue& Value) {
 	}
 }
 
-void ACosmophobiaCharacter::SetFearLevel(float NewFearLevel) {
+void ACosmophobiaCharacter::ModifyFearLevel(float NewFearLevel) {
 	FearLevel = NewFearLevel;
 }
 
-void ACosmophobiaCharacter::SetHealthLevel(float NewHealthLevel) {
-	HealthLevel = NewHealthLevel;
+void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
+{
+	HitsLeft = FMath::Clamp(Health + Delta, 0, 3);
+	if(HitsLeft == 3){
+		// resets all UI effects
+	}
+	else if(HitsLeft == 2){
+		// trigger a red UI effect here
+	}
+	else if(HitsLeft == 1){
+		// trigger a bigger red UI effect here
+	}
+	else{
+		// handle death here
+	}
+	// Trigger any additional effects (e.g. UI update) if health changes.
 }
 
 void ACosmophobiaCharacter::SetVelocityMultiplierLevel(float NewVelocityMultiplier) {
@@ -156,6 +170,7 @@ void ACosmophobiaCharacter::SetLegDisabled(bool bDisabled) {
 
 void ACosmophobiaCharacter::SetTorsoDisabled(bool bDisabled) {
 	TorsoDisabled = bDisabled;
+	UpdateMvoement();
 }
 
 void ACosmophobiaCharacter::SetArmDisabled(bool bDisabled){
@@ -240,22 +255,4 @@ void ACosmophobiaCharacter::UpdateMovementSpeed()
 	}
 	// Ensure the character�s movement component uses the updated speed:
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * VelocityMultiplier;
-}
-
-void ACosmophobiaCharacter::ModifyHealth(int Delta)
-{
-	HitsLeft = FMath::Clamp(Health + Delta, 0, 3);
-	if(HitsLeft == 3){
-		// resets all UI effects
-	}
-	else if(HitsLeft == 2){
-		// trigger a red UI effect here
-	}
-	else if(HitsLeft == 1){
-		// trigger a bigger red UI effect here
-	}
-	else{
-		// handle death here
-	}
-	// Trigger any additional effects (e.g. UI update) if health changes.
 }

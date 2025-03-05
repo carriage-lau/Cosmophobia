@@ -111,7 +111,32 @@ protected:
 
 
 private:
-    void SetFearLevel(float NewFearLevel);
-    void SetHealthLevel(float NewHealthLevel);
+    void ModifyFearLevel(float NewFearLevel);
+    void ModifyHealthLevel(float NewHealthLevel);
     void SetVelocityMultiplierLevel(float NewVelocityMultiplier);
+
+    void Move();
+    void Look();
+
+    void ToggleFlashlight();
+    void DamageHandler();
+
+    void UpdateMovement();
+    void UpdateMovementSpeed();
+
+    void SetLegDisabled(bool bDisabled);
+    void SetTorsoDisabled(bool bDisabled);
+    void SetArmDisabled(bool bDisabled);
+    void UpdateMovementSpeed();
+
+    void PauseGame();
+    void ResumeGame();
+
+    void StartSprint();
+    void StopSprint();
+    void StartSneak();  
+    void StopSneak();
+
+    void Tick();
+    void BeginPlay();
 };
