@@ -4,16 +4,21 @@
 #include <vector>
 #include <iostream>
 #include <random>
+#include <cmath>
+#include <ctime>
+#include <chrono>
 
 class MazeCreator{
     public:
         MazeCreator(int N);
 
-        /** Uses Prim's Algorithm. Note: N must be odd. The algorithm does NOT adjust for this.*/
-        void GenerateMaze(std::vector<std::vector<int>>& maze);
+        /** Uses Prim's Algorithm. Note: N must be odd. The algorithm does NOT adjust for this. You must input an NxN array of 1s.*/
+        void GenerateMaze();
 
     private:
-        struct MapCell;
+        struct MapCell{
+            int x, y;
+        };
 
         std::vector<std::vector<int>> Maze;
 

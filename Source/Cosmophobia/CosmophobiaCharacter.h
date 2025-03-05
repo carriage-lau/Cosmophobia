@@ -107,6 +107,8 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attributes")
     float StartSpeed = 600.0f;
 
+    
+
 
     // For storing the current state, you can use an enum or simple booleans:
     bool bIsSprinting = false;
