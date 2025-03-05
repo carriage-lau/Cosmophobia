@@ -79,12 +79,15 @@ void ACosmophobiaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		// Flashlight
 		EnhancedInputComponent->BindAction(ToggleFlashlightAction, ETriggerEvent::Triggered, this, &ACosmophobiaCharacter::ToggleFlashlight);
+		// triggered by F key
 		
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ACosmophobiaCharacter::StartSprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ACosmophobiaCharacter::StopSprint);
+		// triggered by shift key
 
 		EnhancedInputComponent->BindAction(SneakAction, ETriggerEvent::Started, this, &ACosmophobiaCharacter::StartSneak);
 		EnhancedInputComponent->BindAction(SneakAction, ETriggerEvent::Completed, this, &ACosmophobiaCharacter::StopSneak);
+		// triggered by control key
 
 	
 	}
@@ -194,12 +197,18 @@ void ACosmophobiaCharacter::UpdateMovementSpeed()
 	{
 		SpeedMultiplier *= SneakMultiplier;
 	}
-	// Ensure the character’s movement component uses the updated speed:
+	// Ensure the characterï¿½s movement component uses the updated speed:
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * SpeedMultiplier;
 }
 
 void ACosmophobiaCharacter::ModifyHealth(float Delta)
 {
 	Health = FMath::Clamp(Health + Delta, 0.0f, 100.0f);
+	if(Delta < 0){
+		// trigger a red UI effect here
+	}
+	else{
+		// trigger a green healing UI effect here
+	}
 	// Trigger any additional effects (e.g. UI update) if health changes.
 }
