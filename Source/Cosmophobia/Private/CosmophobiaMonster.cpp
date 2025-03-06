@@ -66,9 +66,6 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     // Optional: Enable collision
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     SphereComponent->SetCollisionResponseToAllChannels(ECR_Block);
-
-    SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaMonster::OnSphereBeginOverlap);
-    SphereComponent->OnComponentEndOverlap.AddDynamic(this, &ACosmophobiaMonster::OnSphereEndOverlap);
 }
 
 bool ACosmophobiaMonster::CheckForWall() {
@@ -300,26 +297,5 @@ void ACosmophobiaMonster::Tick(float DeltaTime) {
     }
 
     HandleState();
-}
-
-void ACosmophobiaMonster::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-    if (OtherActor && OtherActor->IsA(ACosmophobiaCharacter::StaticClass())) {
-        ACosmophobiaCharacter* PlayerCharacter = Cast<ACosmophobiaCharacter>(OtherActor);
-        if (PlayerCharacter) {
-            int DamageRNG = get(0, 6);
-            if(DamageRNG == 0) PlayerCharacter->DamageHandler(EDamageType::Head); 
-            else if(DamageRNG == 1 or DamageRNG ==2) PlayerCharacter->DamageHandler(EDamageType::Leg); 
-            else if(DamageRNG == 3 or DamageRNG == 4) PlayerCharacter->DamageHandler(EDamageType::Arm); 
-            else PlayerCharacter -> DamageHandler(EDamageType::Torso); 
-        }
-    }
-}
-
-void ACosmophobiaMonster::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-    if (OtherActor && OtherActor->IsA(ACosmophobiaCharacter::StaticClass())) {
-        // Handle player exit collision
-        UE_LOG(LogTemp, Warning, TEXT("Monster stopped colliding with player!"));
-    }
 }
 
