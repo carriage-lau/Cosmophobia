@@ -15,9 +15,6 @@ MazeCreator::MazeCreator(int N){
         }
         this-> Maze.push_back(row);
     }
-
-    // adds a central room to prevent the player from suffocating.
-    this->Maze[this->Maze.size() / 2][this->Maze.size() / 2] = 0;
 }
 
 bool MazeCreator::IsInBounds(int x, int y){
@@ -42,11 +39,12 @@ void MazeCreator::GenerateMaze(){
     int y = dist(rng);
 
     // fixes the bug of no maze generating.
-    this->Maze[x][y] = 0;
-    AddFrontier(this->Maze, frontiersList, x+1, y);
-    AddFrontier(this->Maze, frontiersList, x-1, y);
-    AddFrontier(this->Maze, frontiersList, x, y+1);
-    AddFrontier(this->Maze, frontiersList, x, y-1);
+    // adds a central room to prevent the player from suffocating. also acts as the start to the maze
+    this->Maze[this->Maze.size() / 2][this->Maze.size() / 2] = 0;
+    AddFrontier(this->Maze, frontiersList, this->Maze.size() + 1, this->Maze.size());
+    AddFrontier(this->Maze, frontiersList, this->Maze.size() - 1, this->Maze.size());
+    AddFrontier(this->Maze, frontiersList, this->Maze.size(), this->Maze.size() + 1);
+    AddFrontier(this->Maze, frontiersList, this->Maze.size(), this->Maze.size() - 1);
 
     while(!frontiersList.empty()){
         // Chooses a random frontier cell
@@ -56,7 +54,7 @@ void MazeCreator::GenerateMaze(){
 
         // Check if the frontier cell can be opened. If so: marks it as explored and continue.
         int pathCount = 0;
-        if(IsInBounds(frontier.x - 1, frontier.y) && this->Maze[frontier.x - 1][frontier.y] != 0){
+        if(IsInBounds(frontier.x - 1, frontier.y) && this->Maze[frontier.x - 1][frontier.y] == 0){
             pathCount++;
         }
         if(IsInBounds(frontier.x + 1, frontier.y) && this->Maze[frontier.x + 1][frontier.y] == 0){
