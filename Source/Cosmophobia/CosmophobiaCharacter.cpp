@@ -44,6 +44,48 @@ ACosmophobiaCharacter::ACosmophobiaCharacter() {
 	Flashlight->SetIntensity(5000.f); // Adjust as needed
 	Flashlight->SetOuterConeAngle(45.f); // Adjust as needed
 	Flashlight->SetInnerConeAngle(30.f); // Adjust as needed
+
+	// hitbox setup
+	HeadCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HeadCollision"));
+	HeadCollision->SetupAttachment(GetMesh()); // Attach to the mesh or a specific bone if needed
+	HeadCollision->SetRelativeLocation(FVector(0.f, 0.f, 80.f)); // Adjust position as required
+
+	TorsoCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("TorsoCollision"));
+	TorsoCollision->SetupAttachment(GetMesh());
+	TorsoCollision->SetRelativeLocation(FVector(0.f, 0.f, 40.f)); // Adjust as required
+
+	ArmCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ArmCollision"));
+	ArmCollision->SetupAttachment(GetMesh());
+	ArmCollision->SetRelativeLocation(FVector(0.f, 0.f, 20.f)); // Adjust as required
+
+	LegCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("LegCollision"));
+	LegCollision->SetupAttachment(GetMesh());
+	LegCollision->SetRelativeLocation(FVector(0.f, 0.f, 0.f)); // Adjust as required
+
+	HeadCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	HeadCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	HeadCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	HeadCollision->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	TorsoCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	TorsoCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	TorsoCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	TorsoCollision->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+
+	ArmCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ArmCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	ArmCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	ArmCollision->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+
+	LegCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	LegCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	LegCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	LegCollision->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+
+	HeadCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnHeadHit);
+	TorsoCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnTorsoHit);
+	ArmCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnArmHit);
+	LegCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnLegHit);
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -90,7 +132,7 @@ void ACosmophobiaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		// triggered by control key
 
 		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Started, this, &ACosmophobiaCharacter::PauseGame);
-		EnhancedInputComponent->BindAction(SneakAction, ETriggerEvent::Completed, this, &ACosmophobiaCharacter::ResumeGame);
+		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Completed, this, &ACosmophobiaCharacter::ResumeGame);
 		// triggered by escape key
 
 	
@@ -124,7 +166,7 @@ void ACosmophobiaCharacter::ModifyFearLevel(float NewFearLevel) {
 
 void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
 {
-	HitsLeft = FMath::Clamp(Health + Delta, 0, 3);
+	HitsLeft = FMath::Clamp(HitsLeft + Delta, 0, 3);
 	if(HitsLeft == 3){
 		// resets all UI effects
 	}
@@ -170,14 +212,14 @@ void ACosmophobiaCharacter::SetLegDisabled(bool bDisabled) {
 
 void ACosmophobiaCharacter::SetTorsoDisabled(bool bDisabled) {
 	TorsoDisabled = bDisabled;
-	UpdateMvoement();
+	UpdateMovement();
 }
 
 void ACosmophobiaCharacter::SetArmDisabled(bool bDisabled){
 	ArmDisabled = bDisabled;
 }
 
-void ACosmophobiaCharacter::Tick(float DesltaTime) {
+void ACosmophobiaCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 	// Custom tick logic
 }
@@ -199,6 +241,34 @@ void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 		ModifyHealth(-3);
 	}
 	// Handle damage based on DamageType
+}
+
+void ACosmophobiaCharacter::OnHeadHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Head);
+	}
+}
+
+void ACosmophobiaCharacter::OnTorsoHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Torso);
+	}
+}
+
+void ACosmophobiaCharacter::OnArmHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Arm);
+	}
+}
+
+void ACosmophobiaCharacter::OnLegHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Leg);
+	}
 }
 
 void ACosmophobiaCharacter::BeginPlay()

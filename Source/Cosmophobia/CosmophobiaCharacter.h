@@ -5,6 +5,8 @@
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SpotLightComponent.h"
 #include <Camera/CameraComponent.h>
 #include "DamageTypes.h"
@@ -41,6 +43,31 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+
+	// hitbox?
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UCapsuleComponent* HeadCollision;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UBoxComponent* TorsoCollision;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UBoxComponent* ArmCollision;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UBoxComponent* LegCollision;
+
+    UFUNCTION()
+    void OnHeadHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnTorsoHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnArmHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnLegHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
     // Player Attributes
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
@@ -94,6 +121,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* SneakAction;
+    
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    UInputAction* PauseGameAction;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
     float SprintMultiplier = 1.5f;
@@ -112,7 +142,7 @@ protected:
 
 private:
     void ModifyFearLevel(float NewFearLevel);
-    void ModifyHealthLevel(float NewHealthLevel);
+    void ModifyHealthLevel(int delta);
     void SetVelocityMultiplierLevel(float NewVelocityMultiplier);
 
     void Move();
