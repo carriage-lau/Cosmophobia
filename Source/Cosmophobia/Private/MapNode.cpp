@@ -1,8 +1,9 @@
 #include "MapNode.h" //nobody cares, you can ignore
 
 
-AMapNode::AMapNode() {
+AMapNode::AMapNode(TArray<AMapNode*> ConnectedNodes) {
     PrimaryActorTick.bCanEverTick = true;
+    this -> ConnectedNodes = ConnectedNodes;
 }
 
 //runs when player spawns

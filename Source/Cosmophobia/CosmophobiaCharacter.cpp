@@ -135,9 +135,13 @@ void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
 		// trigger a bigger red UI effect here
 	}
 	else{
-		// handle death here
+		HandleDeath();
 	}
-	// Trigger any additional effects (e.g. UI update) if health changes.
+}
+
+void ACosmophobiaCharacter::HandleDeath(){
+	// Handle death here
+	
 }
 
 void ACosmophobiaCharacter::SetVelocityMultiplierLevel(float NewVelocityMultiplier) {
@@ -253,6 +257,6 @@ void ACosmophobiaCharacter::UpdateMovementSpeed()
 	{
 		SetVelocityMultiplierLevel(VelocityMultiplier * SneakMultiplier);
 	}
-	// Ensure the character�s movement component uses the updated speed:
+	// Ensure the character's movement component uses the updated speed:
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * VelocityMultiplier;
 }

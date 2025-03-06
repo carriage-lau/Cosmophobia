@@ -306,7 +306,11 @@ void ACosmophobiaMonster::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedCo
     if (OtherActor && OtherActor->IsA(ACosmophobiaCharacter::StaticClass())) {
         ACosmophobiaCharacter* PlayerCharacter = Cast<ACosmophobiaCharacter>(OtherActor);
         if (PlayerCharacter) {
-            PlayerCharacter->DamageHandler(EDamageType::Torso); // Example damage type
+            int DamageRNG = get(0, 6);
+            if(DamageRNG == 0) PlayerCharacter->DamageHandler(EDamageType::Head); 
+            else if(DamageRNG == 1 or DamageRNG ==2) PlayerCharacter->DamageHandler(EDamageType::Leg); 
+            else if(DamageRNG == 3 or DamageRNG == 4) PlayerCharacter->DamageHandler(EDamageType::Arm); 
+            else PlayerCharacter -> DamageHandler(EDamageType::Torso); 
         }
     }
 }
