@@ -40,7 +40,13 @@ void MazeCreator::GenerateMaze(){
     std::vector<MapCell> frontiersList;
     int x = dist(rng);
     int y = dist(rng);
-    AddFrontier(this->Maze, frontiersList, x, y);
+
+    // fixes the bug of no maze generating.
+    this->Maze[x][y] = 0;
+    AddFrontier(this->Maze, frontiersList, x+1, y);
+    AddFrontier(this->Maze, frontiersList, x-1, y);
+    AddFrontier(this->Maze, frontiersList, x, y+1);
+    AddFrontier(this->Maze, frontiersList, x, y-1);
 
     while(!frontiersList.empty()){
         // Chooses a random frontier cell
@@ -50,7 +56,7 @@ void MazeCreator::GenerateMaze(){
 
         // Check if the frontier cell can be opened. If so: marks it as explored and continue.
         int pathCount = 0;
-        if(IsInBounds(frontier.x - 1, frontier.y) && this->Maze[frontier.x - 1][frontier.y] == 0){
+        if(IsInBounds(frontier.x - 1, frontier.y) && this->Maze[frontier.x - 1][frontier.y] != 0){
             pathCount++;
         }
         if(IsInBounds(frontier.x + 1, frontier.y) && this->Maze[frontier.x + 1][frontier.y] == 0){
