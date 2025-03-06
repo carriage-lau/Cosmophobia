@@ -73,6 +73,9 @@ void MazeCreator::GenerateMaze(){
             AddFrontier(this->Maze, frontiersList, frontier.x, frontier.y - 1);
             AddFrontier(this->Maze, frontiersList, frontier.x, frontier.y + 1);
         }
+        else{
+            Maze[frontier.x][frontier.y] = 1;
+        }
     }
 }
 
