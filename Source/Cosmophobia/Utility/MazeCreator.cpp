@@ -66,7 +66,7 @@ void MazeCreator::GenerateMaze(){
         }
 
         //if the frontier cell has only one path, open it
-        if(pathCount == 1 || dist(rng) % 100 < 10){
+        if(pathCount == 1){
             this->Maze[frontier.x][frontier.y] = 0;
             AddFrontier(this->Maze, frontiersList, frontier.x - 1, frontier.y);
             AddFrontier(this->Maze, frontiersList, frontier.x + 1, frontier.y);
