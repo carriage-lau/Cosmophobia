@@ -39,10 +39,10 @@ void MazeCreator::GenerateMaze(){
     // fixes the bug of no maze generating.
     // adds a central room to prevent the player from suffocating. also acts as the start to the maze
     this->Maze[this->Maze.size() / 2][this->Maze.size() / 2] = 0;
-    AddFrontier(this->Maze, frontiersList, this->Maze.size() + 1, this->Maze.size());
-    AddFrontier(this->Maze, frontiersList, this->Maze.size() - 1, this->Maze.size());
-    AddFrontier(this->Maze, frontiersList, this->Maze.size(), this->Maze.size() + 1);
-    AddFrontier(this->Maze, frontiersList, this->Maze.size(), this->Maze.size() - 1);
+    AddFrontier(this->Maze, frontiersList, this->Maze.size() / 2 + 1, this->Maze.size() / 2);
+    AddFrontier(this->Maze, frontiersList, this->Maze.size()/2 - 1, this->Maze.size() / 2);
+    AddFrontier(this->Maze, frontiersList, this->Maze.size() / 2, this->Maze.size() / 2 + 1);
+    AddFrontier(this->Maze, frontiersList, this->Maze.size() / 2, this->Maze.size() / 2 - 1);
 
     while(!frontiersList.empty()){
         // Chooses a random frontier cell
