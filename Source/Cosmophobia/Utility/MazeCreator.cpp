@@ -18,7 +18,7 @@ MazeCreator::MazeCreator(int N){
 }
 
 bool MazeCreator::IsInBounds(int x, int y){
-    return x >= 0 && x < this->Maze.size() && y >= 0 && y < this->Maze.size();
+    return x >= 0 && x < static_cast<int>(this->Maze.size()) && y >= 0 && y < static_cast<int>(this->Maze.size());
 }
 
 void MazeCreator::AddFrontier(std::vector<std::vector<int>>& maze, std::vector<MapCell>& frontiersList, int x, int y){
@@ -35,8 +35,6 @@ void MazeCreator::GenerateMaze(){
 
     // Initialize the frontier list
     std::vector<MapCell> frontiersList;
-    int x = dist(rng);
-    int y = dist(rng);
 
     // fixes the bug of no maze generating.
     // adds a central room to prevent the player from suffocating. also acts as the start to the maze
