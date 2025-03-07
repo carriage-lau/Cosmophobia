@@ -1,0 +1,53 @@
+Log started at 03/06/2025 21:36:44 (2025-03-07T05:36:44Z)
+No config file at /usr/share/Unreal Engine/UnrealBuildTool/BuildConfiguration.xml
+Creating default config file at /var/root/Library/Application Support/Unreal Engine/UnrealBuildTool/BuildConfiguration.xml
+Configuration will be read from:
+  /var/root/Library/Application Support/Unreal Engine/UnrealBuildTool/BuildConfiguration.xml
+  /var/root/Library/Application Support/Unreal Engine/UnrealBuildTool/BuildConfiguration.xml
+Setting temp directory to '/tmp/UnrealBuildTool/f0f5cb59'
+    Registering build platform: UnrealBuildTool.AndroidPlatformFactory
+    Registering build platform: UnrealBuildTool.IOSPlatformFactory
+    Registering build platform: UnrealBuildTool.LinuxPlatformFactory
+    Registering build platform: UnrealBuildTool.MacPlatformFactory
+Mac Installed SDK(s): MinVersion_Sdk=15.2.0, MaxVersion_Sdk=16.9.0, CurrentVersion_Sdk=16.2, Version_AutoSdk=15.2, CurrentVersion_AutoSdk=
+        Registering build platform: Mac - buildable: True
+    Registering build platform: UnrealBuildTool.TVOSPlatformFactory
+    Registering build platform: UnrealBuildTool.WindowsPlatformFactory
+    Registering build platform: UnrealBuildTool.VisionOSPlatformFactory
+Log file: /Users/michaelwen/Desktop/goofing-off/Cosmophobia/Library/Application Support/Epic/UnrealBuildTool/Log_GPF.txt
+
+Registering project generator UnrealBuildTool.AndroidProjectGenerator for Android
+Skipping project file generator registration for Android due to no valid BuildPlatform.
+Registering project generator UnrealBuildTool.IOSProjectGenerator for IOS
+Skipping project file generator registration for IOS due to no valid BuildPlatform.
+Registering project generator UnrealBuildTool.LinuxProjectGenerator for Linux
+Skipping project file generator registration for Linux due to no valid BuildPlatform.
+Registering project generator UnrealBuildTool.LinuxProjectGenerator for LinuxArm64
+Skipping project file generator registration for LinuxArm64 due to no valid BuildPlatform.
+Registering project generator UnrealBuildTool.MacProjectGenerator for Mac
+Registering project generator UnrealBuildTool.TVOSProjectGenerator for TVOS
+Skipping project file generator registration for TVOS due to no valid BuildPlatform.
+Registering project generator UnrealBuildTool.WindowsProjectGenerator for Win64
+Skipping project file generator registration for Win64 due to no valid BuildPlatform.
+Registering project generator UnrealBuildTool.VisionOSProjectGenerator for VisionOS
+Skipping project file generator registration for VisionOS due to no valid BuildPlatform.
+
+---   SDK INFO START   ---
+---   SDK INFO END   ---
+
+
+Generating XCode project files:
+Total execution time: 0.74 seconds
+A game project path was not specified, which is required when generating project files using an installed build or passing -game on the command line
+BuildException: A game project path was not specified, which is required when generating project files using an installed build or passing -game on the command line
+   at UnrealBuildTool.ProjectFileGenerator.ConfigureProjectFileGeneration(String[] Arguments, Boolean& IncludeAllPlatforms, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/ProjectFiles/ProjectFileGenerator.cs:line 1599
+   at UnrealBuildTool.XcodeProjectFileGenerator.ConfigureProjectFileGeneration(String[] Arguments, Boolean& IncludeAllPlatforms, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/ProjectFiles/Xcode/XcodeProjectFileGenerator.cs:line 452
+   at UnrealBuildTool.ProjectFileGenerator.GenerateProjectFiles(PlatformProjectGeneratorCollection PlatformProjectGenerators, String[] Arguments, Boolean bCacheDataForEditor, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/ProjectFiles/ProjectFileGenerator.cs:line 887
+   at UnrealBuildTool.GenerateProjectFilesMode.ExecuteAsync(CommandLineArguments Arguments, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/Modes/GenerateProjectFilesMode.cs:line 260
+   at UnrealBuildTool.UnrealBuildTool.Main(String[] ArgumentsArray) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.cs:line 687
+WriteFileIfChanged() wrote 0 changed files of 0 requested writes.
+Timeline:
+
+[ 0.000]
+[ 0.000](+0.787) <unknown>
+[ 0.787]
