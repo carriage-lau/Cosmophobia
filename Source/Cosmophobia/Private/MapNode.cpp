@@ -1,9 +1,8 @@
 #include "MapNode.h" //nobody cares, you can ignore
 
 
-AMapNode::AMapNode(TArray<AMapNode*> ConnectedNodes) {
+AMapNode::AMapNode() {
     PrimaryActorTick.bCanEverTick = true;
-    this -> ConnectedNodes = ConnectedNodes;
 }
 
 //runs when player spawns
@@ -36,6 +35,10 @@ void AMapNode::BeginPlay() {
     //      ConnectedNodes.Add(HitNode);
     //  }
     // }
+}
+
+void AMapNode::FillConnectedNodes(TArray<AMapNode *> ConnectedNodesList){
+    this -> ConnectedNodes = ConnectedNodesList;
 }
 
 void AMapNode::Tick(float DeltaTime) {

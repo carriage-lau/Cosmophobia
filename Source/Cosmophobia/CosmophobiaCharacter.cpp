@@ -14,6 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 
+
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
@@ -114,10 +115,11 @@ void ACosmophobiaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACosmophobiaCharacter::Move);
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, static_cast<void (ACosmophobiaCharacter::*)(const FInputActionValue&)>(&ACosmophobiaCharacter::Move));
+                        
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACosmophobiaCharacter::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, static_cast<void (ACosmophobiaCharacter::*)(const FInputActionValue&)>(&ACosmophobiaCharacter::Look));
 
 		// Flashlight
 		EnhancedInputComponent->BindAction(ToggleFlashlightAction, ETriggerEvent::Triggered, this, &ACosmophobiaCharacter::ToggleFlashlight);
@@ -177,7 +179,7 @@ void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
 		// trigger a bigger red UI effect here
 	}
 	else{
-		HandleDeath();
+//		HandleDeath();
 	}
 }
 
@@ -247,33 +249,33 @@ void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 	// Handle damage based on DamageType
 }
 
-void ACosmophobiaCharacter::OnHeadHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Head);
-	}
-}
-
-void ACosmophobiaCharacter::OnTorsoHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Torso);
-	}
-}
-
-void ACosmophobiaCharacter::OnArmHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Arm);
-	}
-}
-
-void ACosmophobiaCharacter::OnLegHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Leg);
-	}
-}
+//void ACosmophobiaCharacter::OnHeadHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+//{
+//	if (OtherActor && OtherActor != this) {
+//		DamageHandler(EDamageType::Head);
+//	}
+//}
+//
+//void ACosmophobiaCharacter::OnTorsoHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+//{
+//	if (OtherActor && OtherActor != this) {
+//		DamageHandler(EDamageType::Torso);
+//	}
+//}
+//
+//void ACosmophobiaCharacter::OnArmHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+//{
+//	if (OtherActor && OtherActor != this) {
+//		DamageHandler(EDamageType::Arm);
+//	}
+//}
+//
+//void ACosmophobiaCharacter::OnLegHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+//{
+//	if (OtherActor && OtherActor != this) {
+//		DamageHandler(EDamageType::Leg);
+//	}
+//}
 
 void ACosmophobiaCharacter::BeginPlay()
 {

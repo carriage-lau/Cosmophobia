@@ -13,6 +13,7 @@
 #include "Engine/Engine.h"
 #include "EngineUtils.h"
 #include "AIController.h"
+#include "TimerManager.h"
 #include <random>
 #include <queue>
 #include <vector>

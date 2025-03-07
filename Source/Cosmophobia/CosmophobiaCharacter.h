@@ -148,25 +148,15 @@ private:
     void Move();
     void Look();
 
-    void ToggleFlashlight();
     void DamageHandler();
 
-    void UpdateMovement();
-    void UpdateMovementSpeed();
 
-    void SetLegDisabled(bool bDisabled);
     void SetTorsoDisabled(bool bDisabled);
     void SetArmDisabled(bool bDisabled);
-    void UpdateMovementSpeed();
 
     void PauseGame();
     void ResumeGame();
 
-    void StartSprint();
-    void StopSprint();
-    void StartSneak();  
-    void StopSneak();
-
     void Tick();
-    void BeginPlay();
+    void HandleDeath();
 };

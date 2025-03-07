@@ -10,7 +10,7 @@ class COSMOPHOBIA_API AMapNode : public AActor {
     GENERATED_BODY()
 
 public:
-    AMapNode(TArray<AMapNode*> ConnectedNodes);
+    AMapNode();
 
     //location
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Node")
@@ -28,5 +28,6 @@ protected:
 
 public:
     // Called every frame
+    void FillConnectedNodes(TArray<AMapNode*> ConnectedNodesList);
 
 };
