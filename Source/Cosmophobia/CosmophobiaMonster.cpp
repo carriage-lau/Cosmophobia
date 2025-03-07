@@ -2,7 +2,7 @@
 
 
 #include "CosmophobiaMonster.h"
-#include "../CosmophobiaCharacter.h"
+#include "CosmophobiaCharacter.h"
 #include "MapNode.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SphereComponent.h"

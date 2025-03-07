@@ -13,8 +13,9 @@ void AMazeGenerator::BeginPlay(){
 }
 
 void AMazeGenerator::GenerateMaze(){
-    MazeInstance->GenerateMaze();
-    std::vector<std::vector<int>> MazeVector = MazeInstance->GetMaze();
+	MazeCreator MazeInstance = MazeCreator(21);
+    MazeInstance.GenerateMaze();
+    std::vector<std::vector<int>> MazeVector = MazeInstance.GetMaze();
     TArray<TArray<int32>> MazeGrid;
     MazeGrid.SetNum(MazeVector.size());
     

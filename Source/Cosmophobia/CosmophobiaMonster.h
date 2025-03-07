@@ -7,7 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "../DamageTypes.h"
+#include "DamageTypes.h"
 #include "CosmophobiaMonster.generated.h"
 
 //prototype class for the game's monster

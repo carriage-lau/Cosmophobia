@@ -14,3 +14,8 @@ AMazeWall::AMazeWall()
         MeshComponent->SetStaticMesh(WallMesh.Object);
     }
 }
+
+void AMazeWall::BeginPlay()
+{
+	Super::BeginPlay();
+}
