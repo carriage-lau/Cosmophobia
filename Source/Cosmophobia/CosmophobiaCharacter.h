@@ -30,7 +30,6 @@ public:
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
     void ToggleFlashlight();
-    void UpdateMovement();
     void UpdateMovementSpeed();
     void SetLegDisabled(bool bDisabled);
     void StartSprint();

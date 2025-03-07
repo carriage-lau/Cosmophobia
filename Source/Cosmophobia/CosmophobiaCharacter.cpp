@@ -200,27 +200,16 @@ void ACosmophobiaCharacter::ToggleFlashlight() {
 	}
 }
 
-void ACosmophobiaCharacter::UpdateMovement() {
-	if (LegDisabled) {
-		SetVelocityMultiplierLevel(this->VelocityMultiplier * 0.5); // Reduce speed by 50%
-	}
-	else if(TorsoDisabled){
-		SetVelocityMultiplierLevel(this->VelocityMultiplier * 0.75); // Reduce speed by 25%
-	}
-	else{
-		SetVelocityMultiplierLevel(this->VelocityMultiplier); // Reset speed to default, redundant logic?
-	}
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * VelocityMultiplier;
-}
-
 void ACosmophobiaCharacter::SetLegDisabled(bool bDisabled) {
 	LegDisabled = bDisabled;
-	UpdateMovement();
+	SetVelocityMultiplierLevel(this->VelocityMultiplier * 0.5); // Reduce speed by 50%
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * VelocityMultiplier;
 }
 
 void ACosmophobiaCharacter::SetTorsoDisabled(bool bDisabled) {
 	TorsoDisabled = bDisabled;
-	UpdateMovement();
+	SetVelocityMultiplierLevel(this->VelocityMultiplier * 0.75); // Reduce speed by 25%
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * VelocityMultiplier;
 }
 
 void ACosmophobiaCharacter::SetArmDisabled(bool bDisabled){
@@ -236,15 +225,15 @@ void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 	if(DamageType != EDamageType::Head){
 		ModifyHealthLevel(-1);
 		if(DamageType == EDamageType::Torso){
-			SetTorsoDisabled(true);
+			if (!TorsoDisabled) SetTorsoDisabled(true);
 			UE_LOG(LogTemp, Warning, TEXT("hit torso"));
 		}
 		else if(DamageType == EDamageType::Arm){
-			SetArmDisabled(true);
+			if (!ArmDisabled) SetArmDisabled(true);
 			UE_LOG(LogTemp, Warning, TEXT("hit arm"));
 		}
 		else if(DamageType == EDamageType::Leg){
-			SetLegDisabled(true);
+			if (!LegDisabled) SetLegDisabled(true);
 			UE_LOG(LogTemp, Warning, TEXT("hit leg"));
 		}
 	}
