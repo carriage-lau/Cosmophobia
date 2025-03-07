@@ -145,9 +145,6 @@ private:
     void ModifyHealthLevel(int delta);
     void SetVelocityMultiplierLevel(float NewVelocityMultiplier);
 
-    void Move();
-    void Look();
-
     void DamageHandler();
 
 

@@ -232,7 +232,7 @@ void ACosmophobiaCharacter::Tick(float DeltaTime) {
 
 void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 	if(DamageType != EDamageType::Head){
-		ModifyHealth(-1);
+		ModifyHealthLevel(-1);
 		if(DamageType == EDamageType::Torso){
 			SetTorsoDisabled(true);
 		}
@@ -244,38 +244,38 @@ void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 		}
 	}
 	else{
-		ModifyHealth(-3);
+		ModifyHealthLevel(-3);
 	}
 	// Handle damage based on DamageType
 }
 
-//void ACosmophobiaCharacter::OnHeadHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//	if (OtherActor && OtherActor != this) {
-//		DamageHandler(EDamageType::Head);
-//	}
-//}
-//
-//void ACosmophobiaCharacter::OnTorsoHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//	if (OtherActor && OtherActor != this) {
-//		DamageHandler(EDamageType::Torso);
-//	}
-//}
-//
-//void ACosmophobiaCharacter::OnArmHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//	if (OtherActor && OtherActor != this) {
-//		DamageHandler(EDamageType::Arm);
-//	}
-//}
-//
-//void ACosmophobiaCharacter::OnLegHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//	if (OtherActor && OtherActor != this) {
-//		DamageHandler(EDamageType::Leg);
-//	}
-//}
+void ACosmophobiaCharacter::OnHeadHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Head);
+	}
+}
+
+void ACosmophobiaCharacter::OnTorsoHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Torso);
+	}
+}
+
+void ACosmophobiaCharacter::OnArmHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Arm);
+	}
+}
+
+void ACosmophobiaCharacter::OnLegHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this) {
+		DamageHandler(EDamageType::Leg);
+	}
+}
 
 void ACosmophobiaCharacter::BeginPlay()
 {
