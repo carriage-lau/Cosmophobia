@@ -46,47 +46,45 @@ ACosmophobiaCharacter::ACosmophobiaCharacter() {
 	Flashlight->SetOuterConeAngle(45.f); // Adjust as needed
 	Flashlight->SetInnerConeAngle(30.f); // Adjust as needed
 
-	// hitbox setup
 	HeadCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HeadCollision"));
-	HeadCollision->SetupAttachment(GetMesh()); // Attach to the mesh or a specific bone if needed
-	HeadCollision->SetRelativeLocation(FVector(0.f, 0.f, 80.f)); // Adjust position as required
+	HeadCollision->SetupAttachment(GetMesh());
+	HeadCollision->SetRelativeLocation(FVector(0.f, 0.f, 80.f)); // Adjust as needed
+
+	HeadCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HeadCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	HeadCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	HeadCollision->SetGenerateOverlapEvents(true);
+	HeadCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnHeadOverlap);
 
 	TorsoCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("TorsoCollision"));
 	TorsoCollision->SetupAttachment(GetMesh());
 	TorsoCollision->SetRelativeLocation(FVector(0.f, 0.f, 40.f)); // Adjust as required
 
+	TorsoCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TorsoCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	TorsoCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	TorsoCollision->SetGenerateOverlapEvents(true);
+	TorsoCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnTorsoOverlap);
+
 	ArmCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ArmCollision"));
 	ArmCollision->SetupAttachment(GetMesh());
 	ArmCollision->SetRelativeLocation(FVector(0.f, 0.f, 20.f)); // Adjust as required
+
+	ArmCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ArmCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	ArmCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	ArmCollision->SetGenerateOverlapEvents(true);
+	ArmCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnArmOverlap);
 
 	LegCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("LegCollision"));
 	LegCollision->SetupAttachment(GetMesh());
 	LegCollision->SetRelativeLocation(FVector(0.f, 0.f, 0.f)); // Adjust as required
 
-	HeadCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	HeadCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
-	HeadCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	HeadCollision->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-
-	TorsoCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	TorsoCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
-	TorsoCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	TorsoCollision->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
-
-	ArmCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ArmCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
-	ArmCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	ArmCollision->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
-
-	LegCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	LegCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	LegCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	LegCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	LegCollision->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
-
-	HeadCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnHeadHit);
-	TorsoCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnTorsoHit);
-	ArmCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnArmHit);
-	LegCollision->OnComponentHit.AddDynamic(this, &ACosmophobiaCharacter::OnLegHit);
+	LegCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	LegCollision->SetGenerateOverlapEvents(true);
+	LegCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnLegOverlap);
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -171,15 +169,19 @@ void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
 	HitsLeft = FMath::Clamp(HitsLeft + Delta, 0, 3);
 	if(HitsLeft == 3){
 		// resets all UI effects
+		UE_LOG(LogTemp, Warning, TEXT("3 Hits Left!"));
 	}
 	else if(HitsLeft == 2){
 		// trigger a red UI effect here
+		UE_LOG(LogTemp, Warning, TEXT("2 Hits Left!"));
 	}
 	else if(HitsLeft == 1){
 		// trigger a bigger red UI effect here
+		UE_LOG(LogTemp, Warning, TEXT("1 Hit Left!"));
 	}
 	else{
 //		HandleDeath();
+		UE_LOG(LogTemp, Warning, TEXT("Dead Player"));
 	}
 }
 
@@ -235,42 +237,46 @@ void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 		ModifyHealthLevel(-1);
 		if(DamageType == EDamageType::Torso){
 			SetTorsoDisabled(true);
+			UE_LOG(LogTemp, Warning, TEXT("hit torso"));
 		}
 		else if(DamageType == EDamageType::Arm){
 			SetArmDisabled(true);
+			UE_LOG(LogTemp, Warning, TEXT("hit arm"));
 		}
 		else if(DamageType == EDamageType::Leg){
 			SetLegDisabled(true);
+			UE_LOG(LogTemp, Warning, TEXT("hit leg"));
 		}
 	}
 	else{
 		ModifyHealthLevel(-3);
+		UE_LOG(LogTemp, Warning, TEXT("hit head"));
 	}
 	// Handle damage based on DamageType
 }
 
-void ACosmophobiaCharacter::OnHeadHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ACosmophobiaCharacter::OnHeadOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this) {
 		DamageHandler(EDamageType::Head);
 	}
 }
 
-void ACosmophobiaCharacter::OnTorsoHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ACosmophobiaCharacter::OnTorsoOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this) {
 		DamageHandler(EDamageType::Torso);
 	}
 }
 
-void ACosmophobiaCharacter::OnArmHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ACosmophobiaCharacter::OnArmOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this) {
 		DamageHandler(EDamageType::Arm);
 	}
 }
 
-void ACosmophobiaCharacter::OnLegHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ACosmophobiaCharacter::OnLegOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this) {
 		DamageHandler(EDamageType::Leg);
