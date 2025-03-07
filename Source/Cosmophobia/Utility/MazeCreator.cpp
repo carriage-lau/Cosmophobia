@@ -79,4 +79,10 @@ void MazeCreator::GenerateMaze(){
     }
 }
 
+std::vector<std::vector<int>> MazeCreator::GetMaze(){
+    return this-> Maze;
+}
+
+
+
 

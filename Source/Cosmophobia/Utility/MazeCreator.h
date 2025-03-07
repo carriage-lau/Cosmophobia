@@ -14,6 +14,9 @@ class MazeCreator{
 
         /** Uses Prim's Algorithm. Note: N must be odd. The algorithm does NOT adjust for this. You must input an NxN array of 1s.*/
         void GenerateMaze();
+    
+        /** Returns the maze. */
+        std::vector<std::vector<int>> GetMaze();
 
     private:
         struct MapCell{
