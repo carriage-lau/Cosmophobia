@@ -29,7 +29,7 @@ void AMazeGenerator::GenerateMaze(){
             }
         }
     
-    float CellSize = 1000.f;  // Each cell is 1000x1000 Unreal units
+    float CellSize = 1000.f;  // Each cell is 1000x1000 Unreal units. please adjust accordingly
 
         for (int32 y = 0; y < MazeGrid.Num(); y++)
         {
@@ -37,7 +37,7 @@ void AMazeGenerator::GenerateMaze(){
             {
                 FVector SpawnLocation = FVector(x * CellSize, y * CellSize, 0);
 
-                if (MazeGrid[y][x] != 0) // 1 or 2 → Wall
+                if (MazeGrid[y][x] != 0) // 1 or 2 → Wall, otherwise remains floor
                 {
                     GetWorld()->SpawnActor<AMazeWall>(AMazeWall::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
                 }
