@@ -34,13 +34,10 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    USkeletalMeshComponent* MonsterMesh;
-
-    // Optional: If you want physics/collisions
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    UCapsuleComponent* CollisionCapsule;
+    UPROPERTY(EditAnywhere, Category = "AI")
+    float MovementSpeed = 300.f;
 
     // Member vars
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
@@ -55,7 +52,15 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float VelocityMultiplier = 1.0f;
 
+    UFUNCTION()
+    void OnMonsterHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+    ACosmophobiaCharacter* GetPlayerCharacter() const;
+    mutable ACosmophobiaCharacter* CachedPlayer;
+
 private:
+    FTimerHandle PlayerCheckTimerHandle;
+
     // Checks for wall
     bool CheckForWall();
     // Moves to another node at random
@@ -70,6 +75,8 @@ private:
     virtual void IdleState(float DeltaTime);
     virtual void NodeChaseState(float DeltaTime);
     virtual void DirectChaseState(float DeltaTime);
+
+	virtual void ValidatePlayerReference();
 
 
     FString state;

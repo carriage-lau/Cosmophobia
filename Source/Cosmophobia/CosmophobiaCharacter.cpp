@@ -22,7 +22,11 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 ACosmophobiaCharacter::ACosmophobiaCharacter() {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(30.f, 80.0f);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Block); // Changed from Ignore
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false); // Disable overlap for main capsule
 
 	// Create a CameraComponent
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
@@ -50,41 +54,50 @@ ACosmophobiaCharacter::ACosmophobiaCharacter() {
 	HeadCollision->SetupAttachment(GetMesh());
 	HeadCollision->SetRelativeLocation(FVector(0.f, 0.f, 80.f)); // Adjust as needed
 
-	HeadCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HeadCollision->SetCollisionObjectType(ECC_Pawn); // Treat as pawn
+	HeadCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	HeadCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	HeadCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	HeadCollision->SetGenerateOverlapEvents(true);
-	HeadCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnHeadOverlap);
+	HeadCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	HeadCollision->SetGenerateOverlapEvents(false);
+	HeadCollision->SetNotifyRigidBodyCollision(true);
 
 	TorsoCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("TorsoCollision"));
 	TorsoCollision->SetupAttachment(GetMesh());
 	TorsoCollision->SetRelativeLocation(FVector(0.f, 0.f, 40.f)); // Adjust as required
 
-	TorsoCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TorsoCollision->SetCollisionObjectType(ECC_Pawn); // Treat as pawn
+	TorsoCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TorsoCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	TorsoCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	TorsoCollision->SetGenerateOverlapEvents(true);
-	TorsoCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnTorsoOverlap);
+	TorsoCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	TorsoCollision->SetGenerateOverlapEvents(false);
+	TorsoCollision->SetNotifyRigidBodyCollision(true);
 
 	ArmCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ArmCollision"));
 	ArmCollision->SetupAttachment(GetMesh());
 	ArmCollision->SetRelativeLocation(FVector(0.f, 0.f, 20.f)); // Adjust as required
 
-	ArmCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ArmCollision->SetCollisionObjectType(ECC_Pawn); // Treat as pawn
+	ArmCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ArmCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	ArmCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	ArmCollision->SetGenerateOverlapEvents(true);
-	ArmCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnArmOverlap);
+	ArmCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	ArmCollision->SetGenerateOverlapEvents(false);
+	ArmCollision->SetNotifyRigidBodyCollision(true);
 
 	LegCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("LegCollision"));
 	LegCollision->SetupAttachment(GetMesh());
 	LegCollision->SetRelativeLocation(FVector(0.f, 0.f, 0.f)); // Adjust as required
 
-	LegCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	LegCollision->SetCollisionObjectType(ECC_Pawn); // Treat as pawn
+	LegCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	LegCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	LegCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	LegCollision->SetGenerateOverlapEvents(true);
-	LegCollision->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaCharacter::OnLegOverlap);
+	LegCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	LegCollision->SetGenerateOverlapEvents(false);
+	LegCollision->SetNotifyRigidBodyCollision(true);
+
+	HeadCollision->ComponentTags.Add("Head");
+	TorsoCollision->ComponentTags.Add("Torso");
+	ArmCollision->ComponentTags.Add("Arm");
+	LegCollision->ComponentTags.Add("Leg");
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -244,40 +257,28 @@ void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
 	// Handle damage based on DamageType
 }
 
-void ACosmophobiaCharacter::OnHeadOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Head);
-	}
-}
-
-void ACosmophobiaCharacter::OnTorsoOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Torso);
-	}
-}
-
-void ACosmophobiaCharacter::OnArmOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Arm);
-	}
-}
-
-void ACosmophobiaCharacter::OnLegOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && OtherActor != this) {
-		DamageHandler(EDamageType::Leg);
-	}
-}
-
 void ACosmophobiaCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	// Custom BeginPlay logic
 	BaseWalkSpeed = StartSpeed;
 	UpdateMovementSpeed();
+	UE_LOG(LogTemp, Warning, TEXT("HeadCollision tags: %d"), HeadCollision->ComponentTags.Num());
+	for (const FName& Tag : HeadCollision->ComponentTags) {
+		UE_LOG(LogTemp, Warning, TEXT("- Tag: %s"), *Tag.ToString());
+	}
+	UE_LOG(LogTemp, Warning, TEXT("TorsoCollision tags: %d"), TorsoCollision->ComponentTags.Num());
+	for (const FName& Tag : TorsoCollision->ComponentTags) {
+		UE_LOG(LogTemp, Warning, TEXT("- Tag: %s"), *Tag.ToString());
+	}
+	UE_LOG(LogTemp, Warning, TEXT("ArmCollision tags: %d"), ArmCollision->ComponentTags.Num());
+	for (const FName& Tag : ArmCollision->ComponentTags) {
+		UE_LOG(LogTemp, Warning, TEXT("- Tag: %s"), *Tag.ToString());
+	}
+	UE_LOG(LogTemp, Warning, TEXT("LegCollision tags: %d"), LegCollision->ComponentTags.Num());
+	for (const FName& Tag : LegCollision->ComponentTags) {
+		UE_LOG(LogTemp, Warning, TEXT("- Tag: %s"), *Tag.ToString());
+	}
 }
 
 void ACosmophobiaCharacter::StartSprint()
