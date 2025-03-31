@@ -57,16 +57,17 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     GetCharacterMovement()->SetWalkableFloorAngle(60.0f); // Correct function
     GetCharacterMovement()->MaxStepHeight = 45.0f;
 
-    // Create and attach the Sphere Component
-    SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-    SphereComponent->SetupAttachment(GetCapsuleComponent());
+    CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
+    CollisionCapsule->InitCapsuleSize(42.f, 96.f); // Adjust size to fit your mesh
+    CollisionCapsule->SetCollisionProfileName("Pawn"); // Use "Pawn" for character collisions
+    RootComponent = CollisionCapsule; // Make this the root
 
-    // Set default radius for the sphere
-    SphereComponent->InitSphereRadius(50.0f); // Adjust the radius as needed
+    MonsterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MonsterMesh"));
+    MonsterMesh->SetupAttachment(CollisionCapsule); // Attach to capsule
+    MonsterMesh->SetRelativeLocation(FVector(0.f, 0.f, -90.f)); // Adjust position
+    MonsterMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // Lightweight collisions
 
-    // Optional: Enable collision
-    SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    SphereComponent->SetCollisionResponseToAllChannels(ECR_Block);
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Face in the direction of movement
 }
 
 bool ACosmophobiaMonster::CheckForWall() {
