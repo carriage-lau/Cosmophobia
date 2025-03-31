@@ -36,7 +36,11 @@ protected:
     virtual void BeginPlay() override;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    USphereComponent* SphereComponent;
+    USkeletalMeshComponent* MonsterMesh;
+
+    // Optional: If you want physics/collisions
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UCapsuleComponent* CollisionCapsule;
 
     // Member vars
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
