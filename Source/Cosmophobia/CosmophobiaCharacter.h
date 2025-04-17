@@ -51,10 +51,16 @@ protected:
     UBoxComponent* TorsoCollision;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-    UBoxComponent* ArmCollision;
+    UBoxComponent* ArmCollisionL;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-    UBoxComponent* LegCollision;
+    UBoxComponent* ArmCollisionR;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UBoxComponent* LegCollisionL;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UBoxComponent* LegCollisionR;
 
     // Player Attributes
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))

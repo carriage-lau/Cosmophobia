@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CosmophobiaMonster.h"
@@ -78,22 +78,20 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     TargetNode = nullptr;
 
     //test params
-    GetCapsuleComponent()->InitCapsuleSize(30.f, 80.f);
-    GetCapsuleComponent()->SetCollisionProfileName("Pawn");
-    GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
-    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetCapsuleComponent()->InitCapsuleSize(24.f, 80.f);
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Block);
-    GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+    // GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+    GetCapsuleComponent()->SetNotifyRigidBodyCollision(false);
 
     // 2. Configure mesh (already exists as GetMesh())
     GetMesh()->SetRelativeLocation(FVector(0, 0, -90.f));
     GetMesh()->SetRelativeRotation(FRotator(0, -90.f, 0)); // Fix forward rotation
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    GetMesh()->SetCollisionObjectType(ECC_Pawn);
     GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
-    GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block); // Critical line
+    GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
     GetMesh()->SetGenerateOverlapEvents(true);
-    GetMesh()->SetNotifyRigidBodyCollision(true);
-    GetMesh()->SetCollisionObjectType(ECC_Pawn); // Critical line
 
     // 3. Configure movement (using existing component)
     GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -104,7 +102,9 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = false;
     GetCharacterMovement()->SetPlaneConstraintEnabled(false); // Ensure no plane constraints
 
-    GetMesh()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
+    GetMesh()->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaMonster::OnMonsterOverlap);
+    // GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
+    // GetMesh()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
 
     // Initialize other variables
     DetectionRadius = 500.0f;
@@ -405,12 +405,29 @@ void ACosmophobiaMonster::Tick(float DeltaTime) {
     }
 }
 
+/*
 void ACosmophobiaMonster::OnMonsterHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     if (!OtherComp || !OtherActor || OtherActor == this) return;
 
+	if (HitComp != GetMesh()) return;
+
     if (ACosmophobiaCharacter* PlayerChar = Cast<ACosmophobiaCharacter>(OtherActor))
     {
+        // Skip if the hit is with the player's capsule component
+        if (OtherComp->IsA<UCapsuleComponent>() && OtherActor->IsA<ACosmophobiaCharacter>())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Hit detected on player component: %s"), *OtherComp->GetName());
+            return;
+        }
+
+        // Skip if the hit is with the monster's capsule component
+        if (OtherComp->IsA<UCapsuleComponent>())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Hit detected on monster component: %s"), *OtherComp->GetName());
+            return;
+        }
+        
         // Debug which component was hit
         FString HitComponentName = OtherComp ? OtherComp->GetName() : "NULL";
         UE_LOG(LogTemp, Warning, TEXT("Hit detected on component: %s"), *HitComponentName);
@@ -440,6 +457,39 @@ void ACosmophobiaMonster::OnMonsterHit(UPrimitiveComponent* HitComp, AActor* Oth
         }
         else if (OtherComp->ComponentTags.Contains("Leg")) {
             PlayerChar->DamageHandler(EDamageType::Leg);
+            UE_LOG(LogTemp, Warning, TEXT("LEG HIT!"));
+        }
+    }
+}
+*/
+
+void ACosmophobiaMonster::OnMonsterOverlap(
+    UPrimitiveComponent* OverlappedComp,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32    /*OtherBodyIndex*/,
+    bool     /*bFromSweep*/,
+    const FHitResult& /*SweepResult*/
+) {
+    if (!OtherActor || OtherActor == this || !OtherComp)
+        return;
+
+    if (auto* Player = Cast<ACosmophobiaCharacter>(OtherActor)) {
+        // Use the same tag‑checking logic:
+        if (OtherComp->ComponentTags.Contains("Head")) {
+            Player->DamageHandler(EDamageType::Head);
+            UE_LOG(LogTemp, Warning, TEXT("HEAD SHOT!"));
+        }
+        else if (OtherComp->ComponentTags.Contains("Torso")) {
+            Player->DamageHandler(EDamageType::Torso);
+            UE_LOG(LogTemp, Warning, TEXT("TORSO HIT!"));
+        }
+        else if (OtherComp->ComponentTags.Contains("Arm")) {
+            Player->DamageHandler(EDamageType::Arm);
+            UE_LOG(LogTemp, Warning, TEXT("ARM HIT!"));
+        }
+        else if (OtherComp->ComponentTags.Contains("Leg")) {
+            Player->DamageHandler(EDamageType::Leg);
             UE_LOG(LogTemp, Warning, TEXT("LEG HIT!"));
         }
     }

@@ -52,11 +52,24 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float VelocityMultiplier = 1.0f;
 
+    /*
     UFUNCTION()
     void OnMonsterHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    */
 
     ACosmophobiaCharacter* GetPlayerCharacter() const;
     mutable ACosmophobiaCharacter* CachedPlayer;
+
+    UFUNCTION()
+    void OnMonsterOverlap(
+        UPrimitiveComponent* OverlappedComp,
+        AActor* OtherActor,
+        UPrimitiveComponent* OtherComp,
+        int32    OtherBodyIndex,
+        bool     bFromSweep,
+        const FHitResult& SweepResult
+    );
+
 
 private:
     FTimerHandle PlayerCheckTimerHandle;
