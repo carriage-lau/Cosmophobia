@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CoreMinimal.h" 
+#include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
@@ -33,8 +33,8 @@ public:
     void UpdateMovementSpeed();
     void SetLegDisabled(bool bDisabled);
     void StartSprint();
-    void StopSprint(); 
-    void StartSneak(); 
+    void StopSprint();
+    void StartSneak();
     void StopSneak();
     void ModifyHealth(float Delta);
 
@@ -43,7 +43,7 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-	// hitbox?
+    // hitbox?
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
     UCapsuleComponent* HeadCollision;
 
@@ -51,23 +51,16 @@ protected:
     UBoxComponent* TorsoCollision;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-    UBoxComponent* ArmCollision;
+    UBoxComponent* ArmCollisionL;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-    UBoxComponent* LegCollision;
+    UBoxComponent* ArmCollisionR;
 
-    // Replace your On...Hit declarations with overlap events:
-    UFUNCTION()
-    void OnHeadOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UBoxComponent* LegCollisionL;
 
-    UFUNCTION()
-    void OnTorsoOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-    UFUNCTION()
-    void OnArmOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-    UFUNCTION()
-    void OnLegOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    UBoxComponent* LegCollisionR;
 
     // Player Attributes
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))

@@ -7,6 +7,9 @@
 #include "DrawDebugHelpers.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PrimitiveComponent.h"
+#include "Components/SkeletalMeshComponent.h" // for mesh-based detection
+#include "Engine/SkeletalMeshSocket.h" // For bone-based detection
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -24,15 +27,40 @@
 #include <Runtime/AIModule/Classes/Perception/AIPerceptionComponent.h>
 
 //helper random number generator
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 int get(int l, int r) {
-	return uniform_int_distribution<int>(l, r)(rng);
+    return std::uniform_int_distribution<int>(l, r)(rng);
+}
+
+ACosmophobiaCharacter* ACosmophobiaMonster::GetPlayerCharacter() const
+{
+    // Return cached player if valid
+    if (CachedPlayer && CachedPlayer->IsValidLowLevelFast())
+    {
+        return CachedPlayer;
+    }
+
+    // Cache is invalid, find player fresh
+    CachedPlayer = nullptr;
+
+    // Method 1: Preferred - Iterate through player controllers
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (APlayerController* PlayerController = It->Get())
+        {
+            if (ACosmophobiaCharacter* PlayerChar = Cast<ACosmophobiaCharacter>(PlayerController->GetPawn()))
+            {
+                CachedPlayer = PlayerChar;
+                return CachedPlayer;
+            }
+        }
+    }
+    return CachedPlayer;
 }
 
 //global variables
 TArray<AMapNode*> NodesList;
-ACosmophobiaCharacter* Player = nullptr;
 
 void ACosmophobiaMonster::PopulateNodesList() {
     NodesList.Empty();
@@ -45,41 +73,43 @@ void ACosmophobiaMonster::PopulateNodesList() {
 // Sets default values
 ACosmophobiaMonster::ACosmophobiaMonster()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
     TargetNode = nullptr;
 
     //test params
+    GetCapsuleComponent()->InitCapsuleSize(24.f, 80.f);
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Block);
+    // GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+    GetCapsuleComponent()->SetNotifyRigidBodyCollision(false);
+
+    // 2. Configure mesh (already exists as GetMesh())
+    GetMesh()->SetRelativeLocation(FVector(0, 0, -90.f));
+    GetMesh()->SetRelativeRotation(FRotator(0, -90.f, 0)); // Fix forward rotation
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    GetMesh()->SetCollisionObjectType(ECC_Pawn);
+    GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
+    GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+    GetMesh()->SetGenerateOverlapEvents(true);
+
+    // 3. Configure movement (using existing component)
+    GetCharacterMovement()->bOrientRotationToMovement = true;
+    GetCharacterMovement()->RotationRate = FRotator(0, 500.f, 0);
+    GetCharacterMovement()->MaxWalkSpeed = 750.0f;
+    GetCharacterMovement()->SetWalkableFloorAngle(60.0f);
+    GetCharacterMovement()->MaxStepHeight = 45.0f;
+    GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = false;
+    GetCharacterMovement()->SetPlaneConstraintEnabled(false); // Ensure no plane constraints
+
+    GetMesh()->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaMonster::OnMonsterOverlap);
+    // GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
+    // GetMesh()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
+
+    // Initialize other variables
     DetectionRadius = 500.0f;
     state = "idle";
     offset = FVector::ZeroVector;
-    GetCharacterMovement()->MaxWalkSpeed = 750.0f;
-    GetCharacterMovement()->SetWalkableFloorAngle(60.0f); // Correct function
-    GetCharacterMovement()->MaxStepHeight = 45.0f;
-
-    CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
-    CollisionCapsule->InitCapsuleSize(42.f, 96.f); // Adjust size to fit your mesh
-    CollisionCapsule->SetCollisionProfileName("Pawn"); // Use "Pawn" for character collisions
-    RootComponent = CollisionCapsule; // Make this the root
-
-    MonsterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MonsterMesh"));
-    MonsterMesh->SetupAttachment(CollisionCapsule); // Attach to capsule
-    MonsterMesh->SetRelativeLocation(FVector(0.f, 0.f, -90.f)); // Adjust position
-    MonsterMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // Lightweight collisions
-
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Face in the direction of movement
-}
-
-bool ACosmophobiaMonster::CheckForWall() {
-    FVector Start = GetActorLocation();
-    FVector End = Start + GetActorForwardVector() * 100;
-    FHitResult HitResult;
-    FCollisionQueryParams QueryParams;
-    QueryParams.AddIgnoredActor(this);
-    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams)) {
-        return true;
-    }
-    return false;
 }
 
 TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapNode* target) {
@@ -140,32 +170,60 @@ void ACosmophobiaMonster::TraverseGraph() {
     }
 }
 
-void ACosmophobiaMonster::HandleState() {
-    if (!Player) return;
+void ACosmophobiaMonster::HandleState()
+{
+    if (ACosmophobiaCharacter* PlayerChar = GetPlayerCharacter())
+    {
+        FVector TraceStart = GetActorLocation() + FVector(0, 0, 90); // Eye level
+        FVector TraceEnd = PlayerChar->GetActorLocation() + FVector(0, 0, 90);
+        float DistanceToPlayer = FVector::Distance(TraceStart, TraceEnd);
 
-    float DistanceToPlayer = FVector::Dist(GetActorLocation(), Player->GetActorLocation());
+        FCollisionQueryParams TraceParams;
+        TraceParams.AddIgnoredActor(this);
+        TraceParams.bTraceComplex = true;
+        TraceParams.bReturnPhysicalMaterial = false;
 
-    if (DistanceToPlayer > DetectionRadius) {
-        state = "idle";
-    }
-    else {
-        FHitResult HitResult;
-        FCollisionQueryParams QueryParams;
-        QueryParams.AddIgnoredActor(this);
+        bool bHasDirectLOS = false;
 
-        bool bHit = GetWorld()->LineTraceSingleByChannel(
-            HitResult,
-            GetActorLocation(),
-            Player->GetActorLocation(),
-            ECC_Visibility,
-            QueryParams
-        );
+        TArray<FVector> TracePoints = {
+            FVector(0,0,90),    // Eye level
+            FVector(0,0,50),    // Chest level
+            FVector(0,0,20)     // Foot level
+        };
 
-        if (!bHit) {
+        for (const FVector& Offset : TracePoints)
+        {
+            FVector Start = GetActorLocation() + Offset;
+            FVector End = PlayerChar->GetActorLocation() + Offset;
+
+            FHitResult Hit;
+            if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams))
+            {
+                bHasDirectLOS = true;
+                // DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 0.5f);
+                break;
+            }
+            else
+            {
+                // DrawDebugLine(GetWorld(), Start, Hit.Location, FColor::Red, false, 0.5f);
+                // DrawDebugSphere(GetWorld(), Hit.Location, 10.f, 8, FColor::Red, false, 0.5f);
+                // UE_LOG(LogTemp, Warning, TEXT("Blocked by: %s"), *Hit.GetActor()->GetName());
+            }
+        }
+
+        static float LastLOSTime = 0.f;
+        if (bHasDirectLOS)
+        {
+            LastLOSTime = GetWorld()->GetTimeSeconds();
             state = "direct chase";
         }
-        else {
-            state = "node chase";
+        else if (GetWorld()->GetTimeSeconds() - LastLOSTime < 2.0f) // Grace period
+        {
+            state = "direct chase";
+        }
+        else
+        {
+            state = (DistanceToPlayer <= DetectionRadius) ? "node chase" : "idle"; // broken rn
         }
     }
 }
@@ -184,7 +242,7 @@ void ACosmophobiaMonster::IdleState(float DeltaTime)
 {
     if (TargetNode) {
         FVector TargetLocation = TargetNode->GetActorLocation();
-        if (FVector::Dist(SphereComponent->GetComponentLocation(), TargetLocation) <= offset.Size() + 50.0f) {
+        if (FVector::Dist(GetCapsuleComponent()->GetComponentLocation(), TargetLocation) <= offset.Size() + 50.0f) {
             CurrentNode = TargetNode;
             GetWorld()->GetTimerManager().SetTimer(
                 TraverseTimerHandle,
@@ -204,12 +262,15 @@ void ACosmophobiaMonster::IdleState(float DeltaTime)
 
 // Node chase state code
 void ACosmophobiaMonster::NodeChaseState(float DeltaTime) {
+    ACosmophobiaCharacter* PlayerChar = GetPlayerCharacter();
+    if (!PlayerChar || !TargetNode) return;
     FVector TargetLocation = TargetNode->GetActorLocation();
-    // gets the closest node to the player
+
+    // Find closest node to player
     AMapNode* PlayerNode = NodesList[0];
     for (AMapNode* Node : NodesList) {
-        float NewDist = FVector::Dist(Node->GetActorLocation(), Player->GetActorLocation());
-        if (FVector::Dist(PlayerNode->GetActorLocation(), Player->GetActorLocation()) > NewDist) {
+        float NewDist = FVector::Dist(Node->GetActorLocation(), PlayerChar->GetActorLocation());
+        if (FVector::Dist(PlayerNode->GetActorLocation(), PlayerChar->GetActorLocation()) > NewDist) {
             PlayerNode = Node;
         }
     }
@@ -231,12 +292,13 @@ void ACosmophobiaMonster::NodeChaseState(float DeltaTime) {
 }
 
 // Direct chase state code
-void ACosmophobiaMonster::DirectChaseState(float DeltaTime) {
-    if (!Player) return;
-
-    FVector PlayerLocation = Player->GetActorLocation();
-    FVector Direction = (PlayerLocation - GetActorLocation()).GetSafeNormal();
-    AddMovementInput(Direction, VelocityMultiplier);
+void ACosmophobiaMonster::DirectChaseState(float DeltaTime)
+{
+    if (ACosmophobiaCharacter* PlayerChar = GetPlayerCharacter()) {
+        FVector PlayerLocation = PlayerChar->GetActorLocation();
+        FVector Direction = (PlayerLocation - GetActorLocation()).GetSafeNormal();
+        AddMovementInput(Direction, VelocityMultiplier);
+    }
 }
 
 //starts to traverse the graph
@@ -244,8 +306,19 @@ void ACosmophobiaMonster::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Initialize Player here, where GetWorld() is valid
-    Player = Cast<ACosmophobiaCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+    GetPlayerCharacter();
+
+    if (GetWorld())
+    {
+        GetWorld()->GetTimerManager().SetTimer(
+            PlayerCheckTimerHandle,
+            this,
+            &ACosmophobiaMonster::ValidatePlayerReference,
+            1.0f,  // Check every second
+            true   // Loop
+        );
+    }
+
     PopulateNodesList();
 
     // Find the closest node to the monster's starting location
@@ -274,30 +347,120 @@ void ACosmophobiaMonster::BeginPlay()
     }
 }
 
+void ACosmophobiaMonster::ValidatePlayerReference()
+{
+    if (!IsValid(CachedPlayer))
+    {
+        CachedPlayer = nullptr;
+        GetPlayerCharacter(); // Refresh the reference
+    }
+}
+
+void ACosmophobiaMonster::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+
+    // Clean up timer
+    if (PlayerCheckTimerHandle.IsValid())
+    {
+        GetWorld()->GetTimerManager().ClearTimer(PlayerCheckTimerHandle);
+    }
+}
+
 
 void ACosmophobiaMonster::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 
-    // State handling
-    if (state != "direct chase") {
-        if (state == "idle") {
-            UE_LOG(LogTemp, Warning, TEXT("Idling"));
-            IdleState(DeltaTime);
-        }
-        else if (state == "node chase") {
-            if (!TargetNode) {
-                UE_LOG(LogTemp, Warning, TEXT("No Target"));
-                return; // Fix: Use TargetNode instead of Target
-            }
-            UE_LOG(LogTemp, Warning, TEXT("Node Chasing"));
-            NodeChaseState(DeltaTime);
-        }
+    // Handle state first
+    HandleState();
+
+    // Then process the current state
+    if (state == "idle") {
+        UE_LOG(LogTemp, Warning, TEXT("Idling"));
+        IdleState(DeltaTime);
     }
-    else {
+    else if (state == "node chase") {
+        if (!TargetNode) {
+            UE_LOG(LogTemp, Warning, TEXT("No Target"));
+            return;
+        }
+        UE_LOG(LogTemp, Warning, TEXT("Node Chasing"));
+        NodeChaseState(DeltaTime);
+    }
+    else if (state == "direct chase") {
         UE_LOG(LogTemp, Warning, TEXT("Direct Chasing"));
         DirectChaseState(DeltaTime);
     }
-
-    HandleState();
 }
 
+
+/** Handles collision with the player.*/
+void ACosmophobiaMonster::OnMonsterOverlap(
+    UPrimitiveComponent* OverlappedComp,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32    /*OtherBodyIndex*/,
+    bool     /*bFromSweep*/,
+    const FHitResult& /*SweepResult*/
+) {
+    if (!OtherActor || OtherActor == this || !OtherComp)
+        return;
+    
+    if (GetWorld()->GetTimeSeconds() - LastHitTimestamp < 2.0f) return;
+
+    if (auto* Player = Cast<ACosmophobiaCharacter>(OtherActor)) {
+        // Use the same tag‑checking logic:
+        if (OtherComp->ComponentTags.Contains("Head")) {
+            Player->DamageHandler(EDamageType::Head);
+            UE_LOG(LogTemp, Warning, TEXT("HEAD SHOT!"));
+        }
+        else if (OtherComp->ComponentTags.Contains("Torso")) {
+            Player->DamageHandler(EDamageType::Torso);
+            UE_LOG(LogTemp, Warning, TEXT("TORSO HIT!"));
+        }
+        else if (OtherComp->ComponentTags.Contains("Arm")) {
+            Player->DamageHandler(EDamageType::Arm);
+            UE_LOG(LogTemp, Warning, TEXT("ARM HIT!"));
+        }
+        else if (OtherComp->ComponentTags.Contains("Leg")) {
+            Player->DamageHandler(EDamageType::Leg);
+            UE_LOG(LogTemp, Warning, TEXT("LEG HIT!"));
+        }
+        
+        // Post hit functionality
+        LastHitTimestamp = GetWorld()->GetTimeSeconds(); // sets a new hit timestamp
+        
+        // Teleports to a random location, does 100 checks of valid location. Ensures roughly 1-1/2^n degree of accuracy.
+        const int AttemptCount = 100;
+        for(int i = 0; i < AttemptCount; ++i){
+            const FVector& TeleportLocation = FVector(FMath::RandRange(0, 300), FMath::RandRange(0, 300), 3); // this uses a continuous random function instead of a discrete one.
+            if(!CheckForWall(TeleportLocation)){
+                SetActorLocation(TeleportLocation);
+                return;
+            }
+        }
+        UE_LOG(LogTemp, Warning, TEXT("No teleport location has been found."));
+        
+        // TODO: make a spawn location for the monster, default behaviour is to TP back to spawn.
+    }
+}
+
+
+/** Sweeps a designated teleport location to check for a wall*/
+bool ACosmophobiaMonster::CheckForWall(const FVector& Location) {
+    const float Tolerance = 5.0f;
+    FCollisionShape CollisionShape = FCollisionShape::MakeSphere(Tolerance);
+    
+    // Starts the sweep check, simple sphere check with radius tolerance
+    FHitResult HitResult;
+    bool bHit = GetWorld()->SweepSingleByChannel(
+        HitResult,
+        Location,
+        Location,
+        FQuat::Identity,
+        ECC_WorldStatic, // sweep? visibility also works, but testing for this is better.
+        CollisionShape
+    );
+    
+    return bHit;
+}

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "CoreMinimal.h" //ignore this for god's sake
+#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 #include "MapNode.generated.h"
 
-using namespace std;
 UCLASS()
 class COSMOPHOBIA_API AMapNode : public AActor {
     GENERATED_BODY()
@@ -12,18 +12,22 @@ class COSMOPHOBIA_API AMapNode : public AActor {
 public:
     AMapNode();
 
-    //location
+    // Position -- this is so that we can edit inside the editor.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Node")
-    FVector position;
+    FVector Position;
 
-    //array of nodes
+    // An array of connected nodes
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Node")
     TArray<AMapNode*> ConnectedNodes;
 
-    FString type;
+    UPROPERTY(VisibleAnywhere)
+    UStaticMeshComponent* NodeMesh;
 
 protected:
+    // Begin play
     virtual void BeginPlay() override;
+    
+    // Tick (this should do nothing)
     virtual void Tick(float DeltaTime) override;
 
 public:

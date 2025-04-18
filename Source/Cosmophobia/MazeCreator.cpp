@@ -45,12 +45,12 @@ void MazeCreator::GenerateMaze(){
     AddFrontier(this->Maze, frontiersList, this->Maze.size() / 2, this->Maze.size() / 2 - 1);
 
     while(!frontiersList.empty()){
-        // Chooses a random frontier cell
+        // chooses a random frontier cell
         int frontierIndex = dist(rng) % frontiersList.size(); // not sure if this is random, but it'll have to do
         MapCell frontier = frontiersList[frontierIndex];
         frontiersList.erase(frontiersList.begin() + frontierIndex);
 
-        // Check if the frontier cell can be opened. If so: marks it as explored and continue.
+        // check if the frontier cell can be opened.
         int pathCount = 0;
         if(IsInBounds(frontier.x - 1, frontier.y) && this->Maze[frontier.x - 1][frontier.y] == 0){
             pathCount++;
@@ -65,7 +65,7 @@ void MazeCreator::GenerateMaze(){
             pathCount++;
         }
 
-        //if the frontier cell has only one path, open it
+        // if the frontier cell has only one path, clear it
         if(pathCount == 1){
             this->Maze[frontier.x][frontier.y] = 0;
             AddFrontier(this->Maze, frontiersList, frontier.x - 1, frontier.y);

@@ -1,42 +1,41 @@
-#include "MapNode.h" //nobody cares, you can ignore
+#include "MapNode.h"
+#include "UObject/ConstructorHelpers.h"
 
 
 AMapNode::AMapNode() {
     PrimaryActorTick.bCanEverTick = true;
+    
+    // Creates the mesh as a sphere -- but solely for debugging
+    NodeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NodeMesh"));
+        RootComponent = NodeMesh;
+
+        static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+        if (SphereMesh.Succeeded()) {
+            NodeMesh->SetStaticMesh(SphereMesh.Object);
+            NodeMesh->SetRelativeScale3D(FVector(0.3f));
+            NodeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        }
+
+        NodeMesh->SetVisibility(true);
 }
 
-//runs when player spawns
+/** Runs when the player spawns. */
 void AMapNode::BeginPlay() {
     Super::BeginPlay();
+    
+    SetActorLocation(GetActorLocation());
 
-    //sets the position of a node if not set already
-    if (position == FVector::ZeroVector) {
-        position = GetActorLocation();
+    // For redundancy's sake
+    if (Position == FVector::ZeroVector) {
+        Position = GetActorLocation();
     }
-
-    // TArray<FHitResult> HitResults;
-    // FVector NodeLocation = position;
-    // float searchRadius = 800.0f;
-
-    // FCollisionShape Sphere = FCollisionShape::MakeSphere(searchRadius); // generates sphere of radius searchRadius
-    // bool bHasHit = GetWorld().SweepMultiByChannel(
-    //  HitResults,
-    //     NodeLocation,
-    //     NodeLocation,
-    //     FQuat::Identity,
-    //     ECC_WorldStatic,
-    //     Sphere
-    // ); //returns all hits within a 500m sweep around the node
-
-    // //adds the nodes inside the list of connected nodes. must check if node is self (monster cannot move to self)
-    // for(auto& Hit : HitResults){
-    //  AGraphNode* HitNode = Cast<AGraphNode>(Hit.GetActor());
-    //  if(HitNode != this){
-    //      ConnectedNodes.Add(HitNode);
-    //  }
-    // }
+    
+    if(NodeMesh){
+        NodeMesh -> SetVisibility(false);
+    }
 }
 
+/** Unnecessary, kept here purely beacuse I might use it in the future*/
 void AMapNode::FillConnectedNodes(TArray<AMapNode *> ConnectedNodesList){
     this -> ConnectedNodes = ConnectedNodesList;
 }
