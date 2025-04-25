@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MazeWall.h"
 #include "MazeCreator.h"
 #include "MazeGenerator.generated.h"
 
@@ -15,11 +14,10 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
     
 private:
     
-    int MazeSize = 21;
-
-    
+    int MazeSize = 20;
     void GenerateMaze();
 };

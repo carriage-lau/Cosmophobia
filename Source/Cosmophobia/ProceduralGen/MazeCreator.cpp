@@ -29,7 +29,6 @@ void MazeCreator::AddFrontier(std::vector<std::vector<int>>& maze, std::vector<M
 }
 
 void MazeCreator::GenerateMaze(){
-    // Initializes a random number generator
     std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
     std::uniform_int_distribution<int> dist(0, this->Maze.size() - 1);
 
