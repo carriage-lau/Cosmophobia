@@ -11,7 +11,6 @@ AMazeGenerator::AMazeGenerator(){
 
 void AMazeGenerator::BeginPlay(){
     Super::BeginPlay();
-    UE_LOG(LogTemp, Warning, TEXT("BeginPlay Triggered!"));
     GenerateMaze();
 }
 
@@ -57,13 +56,15 @@ void AMazeGenerator::GenerateMaze(){
             for (int32 x = 0; x < MazeGrid[y].Num(); x++)
             {
                 FVector SpawnLocation = FVector(x * CellSize, y * CellSize, 0);
-
-                AStaticMeshActor* Wall = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
-                if (Wall && CubeMesh) {
-                    Wall->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
-                    Wall->GetStaticMeshComponent()->SetWorldScale3D(FVector(3.0f));
-                    Wall->SetMobility(EComponentMobility::Static);
-                    Wall->Tags.Add(FName("MazeWallCube"));
+                if(MazeGrid[x][y] != 0){
+                    UE_LOG(LogTemp, Warning, TEXT("Generated a maze cell."));
+                    AStaticMeshActor* Wall = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
+                    if (Wall && CubeMesh) {
+                        Wall->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
+                        Wall->GetStaticMeshComponent()->SetWorldScale3D(FVector(3.0f));
+                        Wall->SetMobility(EComponentMobility::Static);
+                        Wall->Tags.Add(FName("MazeWallCube"));
+                    }
                 }
             }
         }
