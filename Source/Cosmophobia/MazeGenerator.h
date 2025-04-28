@@ -17,7 +17,9 @@ protected:
     virtual void Tick(float DeltaTime) override;
     
 private:
-    
     int MazeSize = 20;
+    
+    bool HasRegenerated = false;
+    
     void GenerateMaze();
 };

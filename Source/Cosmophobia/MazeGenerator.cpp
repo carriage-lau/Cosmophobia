@@ -17,8 +17,9 @@ void AMazeGenerator::BeginPlay(){
 
 void AMazeGenerator::Tick(float DeltaTime){
     // A timer. Nothing else.
-    if(FMath::Abs(GetWorld()->GetTimeSeconds() - 10) < 0.01){
+    if(!HasRegenerated && FMath::Abs(GetWorld()->GetTimeSeconds() - 10) < 1){
         GenerateMaze();
+        HasRegenerated = true;
     }
 }
 
