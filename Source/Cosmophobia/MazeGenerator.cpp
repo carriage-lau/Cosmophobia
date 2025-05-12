@@ -3,6 +3,7 @@
 #include "EngineUtils.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
+#include "MapNode.h"
 #include <vector>
 
 AMazeGenerator::AMazeGenerator(){
@@ -48,14 +49,14 @@ void AMazeGenerator::GenerateMaze(){
     }
     
     // And this generates the maze inside the map
-    float CellSize = 300.f;  // spawn room is in (11, 11)
+    float CellSize = 300.f;
     UStaticMesh* CubeMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
     
         for (int32 y = 0; y < MazeGrid.Num(); y++)
         {
             for (int32 x = 0; x < MazeGrid[y].Num(); x++)
             {
-                FVector SpawnLocation = FVector(x * CellSize, y * CellSize, 0);
+                FVector SpawnLocation = FVector(x * CellSize, y * CellSize, 140);
                 if(MazeGrid[x][y] != 0){
                     UE_LOG(LogTemp, Warning, TEXT("Generated a maze cell."));
                     AStaticMeshActor* Wall = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
@@ -65,6 +66,10 @@ void AMazeGenerator::GenerateMaze(){
                         Wall->SetMobility(EComponentMobility::Static);
                         Wall->Tags.Add(FName("MazeWallCube"));
                     }
+                }
+                else{
+                    FVector NodeLocation = FVector(x * CellSize + 150.0f, y * CellSize + 150.0f, 140);
+                    AMapNode* Node = GetWorld()->SpawnActor<AMapNode>(AMapNode::StaticClass(), NodeLocation, FRotator::ZeroRotator);
                 }
             }
         }

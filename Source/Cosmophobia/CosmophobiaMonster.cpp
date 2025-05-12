@@ -427,15 +427,21 @@ void ACosmophobiaMonster::OnMonsterOverlap(
             UE_LOG(LogTemp, Warning, TEXT("LEG HIT!"));
         }
         
-        // Post hit functionality
+        // Post hit functionality: resets the iframe timer, and also gets a new monster location to ensure that it stops chasing the player.
         LastHitTimestamp = GetWorld()->GetTimeSeconds(); // sets a new hit timestamp
         
-        // Teleports to a random location, does 100 checks of valid location. Ensures roughly 1-1/2^n degree of accuracy.
+        FVector CurrentMonsterLocation = GetActorLocation();
         const int AttemptCount = 100;
+        const float DistanceTolerance = 500.0f;
         for(int i = 0; i < AttemptCount; ++i){
-            const FVector& TeleportLocation = FVector(FMath::RandRange(0, 300), FMath::RandRange(0, 300), 3); // this uses a continuous random function instead of a discrete one.
-            if(!CheckForWall(TeleportLocation)){
-                SetActorLocation(TeleportLocation);
+            int32 index = FMath::RandRange(0, NodesList.Num() - 1);
+            AMapNode* TeleportNode = NodesList[index];
+            
+            FVector TargetLocation = TeleportNode->GetActorLocation();
+            float Distance = FVector::Dist(CurrentMonsterLocation, TargetLocation);
+            if(Distance > DistanceTolerance){
+                SetActorLocation(TargetLocation);
+                UE_LOG(LogTemp, Warning, TEXT("Successfully teleported!"), index, Distance);
                 return;
             }
         }

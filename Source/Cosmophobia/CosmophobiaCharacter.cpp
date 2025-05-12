@@ -211,7 +211,7 @@ void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
         UE_LOG(LogTemp, Warning, TEXT("1 Hit Left!"));
     }
     else{
-//        HandleDeath();
+//        HandleDeath(); // TODO: fix
         UE_LOG(LogTemp, Warning, TEXT("Dead Player"));
     }
 }

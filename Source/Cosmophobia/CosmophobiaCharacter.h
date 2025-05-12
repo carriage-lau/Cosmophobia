@@ -108,6 +108,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
     USkeletalMeshComponent* Mesh1P;
+    
+    UPROPERTY(EditAnywhere, Category = "PostProcess")
+    UMaterialInterface* BasePostProcessingMaterial;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* SprintAction;

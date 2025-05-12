@@ -1,4 +1,4 @@
-//#include "MazeWall.h"
+ //#include "MazeWall.h"
 //#include "Components/StaticMeshComponent.h"
 //#include "UObject/ConstructorHelpers.h"
 //

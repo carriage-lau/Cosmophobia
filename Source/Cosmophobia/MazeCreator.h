@@ -12,7 +12,7 @@ class MazeCreator{
     public:
         MazeCreator(int N);
 
-        /** Uses Prim's Algorithm. Note: N must be odd for the initial room to spawn in the center. The algorithm does NOT adjust for this.*/
+        /** Uses Prim's Algorithm. Note: N must be odd. The algorithm does NOT adjust for this. You must input an NxN array of 1s.*/
         void GenerateMaze();
     
         /** Returns the maze. */
