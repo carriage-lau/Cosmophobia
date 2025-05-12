@@ -77,6 +77,13 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     PrimaryActorTick.bCanEverTick = true;
     TargetNode = nullptr;
 
+    /** 
+     *  This single constructor took over 2 weeks to figure out
+     *  Top 5 reasons no one ever should use Unoptimised Engine 5
+     *  Useless fucking shit
+     *  Fuck Epic
+    **/
+
     //test params
     GetCapsuleComponent()->InitCapsuleSize(24.f, 80.f);
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
