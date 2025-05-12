@@ -1,0 +1,290 @@
+Last login: Sun May  4 15:04:00 on ttys008
+michaelwen@Michaels-MacBook-Pro-1589 ~ % brew install cmake
+==> Auto-updating Homebrew...
+Adjust how often this is run with HOMEBREW_AUTO_UPDATE_SECS or disable with
+HOMEBREW_NO_AUTO_UPDATE. Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).
+==> Downloading https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:40e7f5d7514a7e9757facdd39006f7a351d3d7986d3a228be13c8b1c3216727b
+######################################################################### 100.0%
+==> Pouring portable-ruby-3.4.3.arm64_big_sur.bottle.tar.gz
+==> Auto-updated Homebrew!
+Updated 3 taps (homebrew/services, homebrew/core and homebrew/cask).
+==> New Formulae
+ab-av1                                   lazyjournal
+adaptivecpp                              leetgo
+add-determinism                          libgoa
+algolia                                  libgudev
+alloy                                    libpg_query
+anubis                                   lld@19
+anyquery                                 llvm@19
+apache-flink@1                           lume
+api-linter                               mani
+async_simple                             marmite
+bkmr                                     mcpm
+block-goose-cli                          mender-artifact
+brename                                  miniflux
+buffrs                                   mob
+camlpdf                                  mox
+cargo-shear                              multi-gitter
+cargo-sort                               netfetch
+cargo-spellcheck                         newsraft
+chdig                                    nip4
+cpp-lazy                                 nmstatectl
+darklua                                  node-red
+dblab                                    nom
+decompose                                opkssh
+dish                                     otel-cli
+dockcheck                                otterdog
+dockerfmt                                physunits
+dvr-scan                                 policy-engine
+easyeda2kicad                            preevy
+elfio                                    prog8
+ente-cli                                 projectable
+erlfmt                                   protobuf@29
+evans                                    protoc-gen-doc
+excalidraw-converter                     pyp
+fabric-ai                                ra-multiplex
+falcosecurity-libs                       rasterio
+fedify                                   readerwriterqueue
+ferron                                   restish
+fiona                                    rhai
+fortitude                                rofi
+fortran-stdlib                           rpds-py
+fpm                                      sacad
+ftxui                                    semver
+gama                                     sentry-native
+gamdl                                    sequoia-chameleon-gnupg
+gcr                                      sequoia-sqv
+gdown                                    sexpect
+geesefs                                  shuttle
+gersemi                                  statesmith
+git-graph                                tdom
+git-who                                  technitium-dns
+github-mcp-server                        technitium-library
+gnome-online-accounts                    terraform-iam-policy-validator
+goimports                                terraform-module-versions
+grafana-alloy                            tfcmt
+gtree                                    tfmv
+gut                                      tfsort
+harsh                                    tmex
+hexd                                     tsui
+hjson                                    twitch-cli
+hub-tool                                 typioca
+iccmax                                   uhubctl
+icu4c@77                                 umockdev
+iguana                                   unciv
+infat                                    undercutf1
+intermodal                               unoserver
+is-fast                                  veccore
+jaguar                                   wrkflw
+jenkins-cli                              x-cmd
+kbld                                     xan
+keyutils                                 xtl
+krep                                     yalantinglibs
+ktexttemplate                            yeet
+kubernetes-cli@1.32                      yutu
+largetifftools                           zlib-rs
+lavat
+==> New Casks
+ace-studio                               font-playpen-sans-hebrew
+advanced-renamer                         font-playpen-sans-thai
+agent-tars                               font-pretendard-gov
+antinote                                 font-source-han-code-jp
+atv-remote                               font-special-gothic
+bambu-connect                            font-special-gothic-condensed-one
+beutl                                    font-special-gothic-expanded-one
+captainplugins                           font-wdxl-lubrifont-jp-n
+charles@4                                font-wdxl-lubrifont-sc
+chime@alpha                              font-wdxl-lubrifont-tc
+chordpotion                              font-webdings
+cloudflare-warp@beta                     font-winky-rough
+cloudpouch                               grayjay
+clover-chord-systems                     hamrs-pro
+comfyui                                  highlight
+companion                                hy-rpe2
+companion-satellite                      ijhttp
+companion@beta                           inmusic-software-center
+consul                                   irpf2025
+coterm                                   k6-studio
+dante-controller                         kate
+dante-via                                kilohearts-installer
+deepchat                                 liviable
+desktime                                 macskk
+earnapp                                  meru
+elemental                                moment
+elemental@6                              mouseless@preview
+excire-foto                              ndi-tools
+focu                                     nethlink
+font-adwaita                             notion-mail
+font-adwaita-mono-nerd-font              nvidia-nsight-compute
+font-ancizar-sans                        opencloud
+font-ancizar-serif                       outerbase-studio
+font-asta-sans                           ovice
+font-atkynson-mono-nerd-font             pastenow
+font-bizter                              profit
+font-coral-pixels                        qobuz-downloader
+font-epunda-sans                         qt-design-studio
+font-epunda-slab                         rave
+font-exile                               realvnc-connect
+font-harmonyos-sans                      repo-prompt
+font-harmonyos-sans-naskh-arabic         restapia
+font-harmonyos-sans-sc                   sc-menu
+font-harmonyos-sans-tc                   slidepad
+font-huninn                              sokim
+font-jetbrains-maple-mono                soundanchor
+font-jetbrains-maple-mono-nf             stability-matrix
+font-kumar-one-outline                   swift-shift
+font-libertinus-math                     tal-drum
+font-libertinus-mono                     thelowtechguys-cling
+font-lxgw-wenkai-gb-lite                 trae-cn
+font-m-plus-rounded-1c                   triliumnext-notes
+font-maple-mono-normal                   vesktop
+font-maple-mono-normal-cn                viables
+font-maple-mono-normal-nf                vimy
+font-maple-mono-normal-nf-cn             voiceink
+font-noto-serif-dives-akuru              warp@preview
+font-playpen-sans-arabic                 witsy
+font-playpen-sans-deva                   yaak@beta
+
+You have 10 outdated formulae installed.
+
+Warning: Treating cmake as a formula. For the cask, use homebrew/cask/cmake or specify the `--cask` flag. To silence this message, use the `--formula` flag.
+==> Downloading https://ghcr.io/v2/homebrew/core/cmake/manifests/4.0.1
+######################################################################### 100.0%
+==> Fetching cmake
+==> Downloading https://ghcr.io/v2/homebrew/core/cmake/blobs/sha256:5fc195bfee6a
+######################################################################### 100.0%
+==> Pouring cmake--4.0.1.arm64_sequoia.bottle.tar.gz
+==> Caveats
+To install the CMake documentation, run:
+  brew install cmake-docs
+
+Emacs Lisp files have been installed to:
+  /opt/homebrew/share/emacs/site-lisp/cmake
+==> Summary
+🍺  /opt/homebrew/Cellar/cmake/4.0.1: 3,870 files, 57.8MB
+==> Running `brew cleanup cmake`...
+Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP.
+Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).
+==> `brew cleanup` has not been run in the last 30 days, running now...
+Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP.
+Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).
+Pruned 2 symbolic links from /opt/homebrew
+michaelwen@Michaels-MacBook-Pro-1589 ~ % 
+  [Restored May 6, 2025 at 8:00:12 AM]
+Last login: Tue May  6 07:59:57 on console
+michaelwen@Michaels-MacBook-Pro-1754 ~ % 
+  [Restored May 7, 2025 at 10:10:08 AM]
+Last login: Tue May  6 08:00:12 on ttys000
+michaelwen@Michaels-MacBook-Pro-1849 ~ % git push --forceopen ~/Library/Group\ Containers/group.com.apple.VoiceMemos.shared/Recording
+fatal: not a git repository (or any of the parent directories): .git
+michaelwen@Michaels-MacBook-Pro-1849 ~ % open ~/Library/Group\ Containers/group.com.apple.VoiceMemos.shared/Recordings
+michaelwen@Michaels-MacBook-Pro-1849 ~ % sudo chown -R michaelwen "/Users/michaelwen/Desktop/goofing-off/Cosmophobia"
+Password:
+michaelwen@Michaels-MacBook-Pro-1849 ~ % "/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh" "/Users/michaelwen/Desktop/goofing-off/Cosmophobia/Cosmophobia.uproject"
+
+Setting up Unreal Engine project files...
+
+Setting up bundled DotNet SDK
+/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/../../../Binaries/ThirdParty/DotNet/8.0.300/mac-arm64
+Log file: /Users/michaelwen/Documents/Library/Application Support/Epic/UnrealBuildTool/Log_GPF.txt
+
+Generating XCode project files:
+Discovering modules, targets and source code for project...
+Total execution time: 7.95 seconds
+Unhandled exception: IOException: Permission denied
+Wrapped by UnauthorizedAccessException: Access to the path '/Users/Shared/Epic Games/UE_5.5/Engine/Intermediate/Build/BuildRulesProjects/UE5ProgramRules/UE5ProgramRules.csproj' is denied.
+   at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.File.Open(String path, FileMode mode, FileAccess access, FileShare share)
+   at EpicGames.Core.FileReference.Open(FileReference location, FileMode mode, FileAccess access, FileShare share) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/Shared/EpicGames.Core/FileReference.cs:line 352
+   at UnrealBuildTool.ProjectFileGenerator.CreateRulesAssemblyProject(Dictionary`2 RulesAssemblies, RulesAssembly RulesAssembly, DirectoryReference FSPathBase, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/ProjectFiles/ProjectFileGenerator.cs:line 726
+   at UnrealBuildTool.ProjectFileGenerator.GenerateProjectFiles(PlatformProjectGeneratorCollection PlatformProjectGenerators, String[] Arguments, Boolean bCacheDataForEditor, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/ProjectFiles/ProjectFileGenerator.cs:line 1279
+   at UnrealBuildTool.GenerateProjectFilesMode.ExecuteAsync(CommandLineArguments Arguments, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/Modes/GenerateProjectFilesMode.cs:line 260
+   at UnrealBuildTool.UnrealBuildTool.Main(String[] ArgumentsArray) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.cs:line 687
+michaelwen@Michaels-MacBook-Pro-1849 ~ % "/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh" "/Users/michaelwen/Desktop/goofing-off/Cosmophobia/Cosmophobia.uproject"
+
+Setting up Unreal Engine project files...
+
+Setting up bundled DotNet SDK
+/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/../../../Binaries/ThirdParty/DotNet/8.0.300/mac-arm64
+Log file: /Users/michaelwen/Documents/Library/Application Support/Epic/UnrealBuildTool/Log_GPF.txt
+
+Generating XCode project files:
+Discovering modules, targets and source code for project...
+Total execution time: 6.37 seconds
+Unhandled exception: IOException: Permission denied
+Wrapped by UnauthorizedAccessException: Access to the path '/Users/Shared/Epic Games/UE_5.5/Engine/Intermediate/Build/BuildRulesProjects/UE5ProgramRules/UE5ProgramRules.csproj' is denied.
+   at Interop.ThrowExceptionForIoErrno(ErrorInfo errorInfo, String path, Boolean isDirError)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, UnixFileMode openPermissions, Int64& fileLength, UnixFileMode& filePermissions, Boolean failForSymlink, Boolean& wasSymlink, Func`4 createOpenException)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.File.Open(String path, FileMode mode, FileAccess access, FileShare share)
+   at EpicGames.Core.FileReference.Open(FileReference location, FileMode mode, FileAccess access, FileShare share) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/Shared/EpicGames.Core/FileReference.cs:line 352
+   at UnrealBuildTool.ProjectFileGenerator.CreateRulesAssemblyProject(Dictionary`2 RulesAssemblies, RulesAssembly RulesAssembly, DirectoryReference FSPathBase, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/ProjectFiles/ProjectFileGenerator.cs:line 726
+   at UnrealBuildTool.ProjectFileGenerator.GenerateProjectFiles(PlatformProjectGeneratorCollection PlatformProjectGenerators, String[] Arguments, Boolean bCacheDataForEditor, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/ProjectFiles/ProjectFileGenerator.cs:line 1279
+   at UnrealBuildTool.GenerateProjectFilesMode.ExecuteAsync(CommandLineArguments Arguments, ILogger Logger) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/Modes/GenerateProjectFilesMode.cs:line 260
+   at UnrealBuildTool.UnrealBuildTool.Main(String[] ArgumentsArray) in /Users/build/Build/++UE5/Sync/Engine/Saved/CsTools/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.cs:line 687
+michaelwen@Michaels-MacBook-Pro-1849 ~ % sudo chown -R $USER:staff "/Users/Shared/Epic Games/UE_5.5"
+zsh: bad substitution
+michaelwen@Michaels-MacBook-Pro-1849 ~ % sudo chown -R michaelwen  "/Users/Shared/Epic Games/UE_5.5"
+Password:
+michaelwen@Michaels-MacBook-Pro-1849 ~ % "/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh" "/Users/michaelwen/Desktop/goofing-off/Cosmophobia/Cosmophobia.uproject"
+
+Setting up Unreal Engine project files...
+
+Setting up bundled DotNet SDK
+/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/../../../Binaries/ThirdParty/DotNet/8.0.300/mac-arm64
+Log file: /Users/michaelwen/Documents/Library/Application Support/Epic/UnrealBuildTool/Log_GPF.txt
+
+Generating XCode project files:
+Discovering modules, targets and source code for project...
+Choosing MODERN XCODE based on .ini settings
+GettingNativeInfo 7909.302ms overall
+Generating data for project indexing...    
+Exception while generating include data for DotNetPerforceLib: Program targets are not currently supported from this engine distribution.
+Exception while generating include data for EventLoopUnitTests: Program targets are not currently supported from this engine distribution.
+Generating data for project indexing... 100%
+Writing project files...    
+Writing xcode workspace /Users/michaelwen/Desktop/goofing-off/Cosmophobia/Cosmophobia (Mac).xcworkspace
+Writing project files... 100%
+
+Generating QueryTargets data for editor...
+
+Generating VisualStudioMac project files:
+Discovering modules, targets and source code for project...
+Unable to compute VC include paths on non-Windows host
+Writing project files... 100%
+Total execution time: 26.26 seconds
+michaelwen@Michaels-MacBook-Pro-1849 ~ % cd Users
+cd: no such file or directory: Users
+michaelwen@Michaels-MacBook-Pro-1849 ~ % cd Cosmophobia
+cd: no such file or directory: Cosmophobia
+michaelwen@Michaels-MacBook-Pro-1849 ~ % cd goofing-off
+cd: no such file or directory: goofing-off
+michaelwen@Michaels-MacBook-Pro-1849 ~ % cd Desktop
+michaelwen@Michaels-MacBook-Pro-1849 Desktop % cd goofing-off/Cosmophobia
+michaelwen@Michaels-MacBook-Pro-1849 Cosmophobia % nano regen.sh
+
+  UW PICO 5.09                        File: regen.sh                        Modified  
+
+#!/bin/bash
+
+PROJECT_PATH="$(pwd)"
+
+ENGINE_PATH="/Users/Shared/Epic Games/UE_5.5"
+
+echo "Cleaning project directories..."
+rm -rf Intermediate Saved DerivedDataCache .xcworkspace
+
+echo "Fixing ownership..."
+sudo chown -R michaelwen "$ENGINE_PATH"
+sudo chown -R michaelwen "$PROJECT_PATH"
+
+echo "regenerating Xcode project..."
+"$ENGINE_PATH/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh" "$PROJECT_PATH/Cos$
+
+echo "Process done; Open the new .xcworkspace and build in Xcode."
+
+
+^G Get Help   ^O WriteOut   ^R Read File  ^Y Prev Pg    ^K Cut Text   ^C Cur Pos    
+^X Exit       ^J Justify    ^W Where is   ^V Next Pg    ^U UnCut Text ^T To Spell   

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+PROJECT_PATH="$(pwd)"
+
+ENGINE_PATH="/Users/Shared/Epic Games/UE_5.5"
+
+echo "Cleaning project directories..."
+rm -rf Intermediate Saved DerivedDataCache .xcworkspace
+
+echo "Fixing ownership..."
+sudo chown -R michaelwen "$ENGINE_PATH"
+sudo chown -R michaelwen "$PROJECT_PATH"
+
+echo "regenerating Xcode project..."
+"$ENGINE_PATH/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh" "$PROJECT_PATH/Cosmophobia.uproject"
+
+echo "Process done; Open the new .xcworkspace and build in Xcode."
+
+
+
