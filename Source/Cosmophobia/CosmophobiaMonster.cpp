@@ -413,7 +413,7 @@ void ACosmophobiaMonster::OnMonsterOverlap(
     if (!OtherActor || OtherActor == this || !OtherComp)
         return;
     
-    if (FMath::Abs(GetWorld()->GetTimeSeconds() - LastHitTimestamp < 2.0f)) return;
+    if (FMath::Abs(GetWorld()->GetTimeSeconds() - LastHitTimestamp) < 2.0f) return;
 
     if (auto* Player = Cast<ACosmophobiaCharacter>(OtherActor)) {
         // Use the same tag‑checking logic:
