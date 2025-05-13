@@ -32,9 +32,6 @@ public:
     virtual void Tick(float DeltaTime) override;
     void PopulateNodesList();
 
-    // welcome to my project
-    // you will die once you read two lines
-    // good luck.
 protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -55,10 +52,6 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float VelocityMultiplier = 1.0f;
 
-    /*
-    UFUNCTION()
-    void OnMonsterHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-    */
 
     ACosmophobiaCharacter* GetPlayerCharacter() const;
     mutable ACosmophobiaCharacter* CachedPlayer;

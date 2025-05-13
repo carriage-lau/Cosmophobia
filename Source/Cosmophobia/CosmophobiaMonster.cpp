@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// There is no copyright because you suck
 
 #include "CosmophobiaMonster.h"
 #include "CosmophobiaCharacter.h"
@@ -9,7 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/SkeletalMeshComponent.h" // for mesh-based detection
-#include "Engine/SkeletalMeshSocket.h" // For bone-based detection
+#include "Engine/SkeletalMeshSocket.h" // for bone-based detection
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -17,6 +16,7 @@
 #include "EngineUtils.h"
 #include "AIController.h"
 #include "TimerManager.h"
+#include "MazeGenerator.h"
 #include <random>
 #include <queue>
 #include <vector>
@@ -103,9 +103,7 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     GetCharacterMovement()->SetPlaneConstraintEnabled(false); // Ensure no plane constraints
 
     GetMesh()->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaMonster::OnMonsterOverlap);
-    // GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
-    // GetMesh()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
-
+    
     // Initialize other variables
     DetectionRadius = 500.0f;
     state = "idle";
@@ -406,7 +404,7 @@ void ACosmophobiaMonster::OnMonsterOverlap(
     if (!OtherActor || OtherActor == this || !OtherComp)
         return;
     
-    if (FMath::Abs(GetWorld()->GetTimeSeconds() - LastHitTimestamp < 2.0f)) return;
+    if (FMath::Abs(GetWorld()->GetTimeSeconds() - LastHitTimestamp) < 2.0f) return;
 
     if (auto* Player = Cast<ACosmophobiaCharacter>(OtherActor)) {
         // Use the same tag‑checking logic:
@@ -446,6 +444,7 @@ void ACosmophobiaMonster::OnMonsterOverlap(
             }
         }
         UE_LOG(LogTemp, Warning, TEXT("No teleport location has been found."));
+        
         
         // TODO: make a spawn location for the monster, default behaviour is to TP back to spawn.
     }

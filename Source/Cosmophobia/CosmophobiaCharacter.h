@@ -111,6 +111,9 @@ protected:
     
     UPROPERTY(EditAnywhere, Category = "PostProcess")
     UMaterialInterface* BasePostProcessingMaterial;
+    
+    UPROPERTY()
+    UMaterialInstanceDynamic* DynMat;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* SprintAction;
