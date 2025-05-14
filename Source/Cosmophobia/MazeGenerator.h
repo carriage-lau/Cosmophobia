@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MazeWall.h"
 #include "MazeCreator.h"
 #include "MazeGenerator.generated.h"
 
@@ -13,13 +12,15 @@ class COSMOPHOBIA_API AMazeGenerator : public AActor
 public:
     AMazeGenerator();
 
+    UFUNCTION(BlueprintCallable, Category = "Maze")
+    void GenerateMaze();
+
 protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
     
 private:
+    int MazeSize = 20;
     
-    int MazeSize = 21;
-
-    
-    void GenerateMaze();
+    bool HasRegenerated = false;
 };

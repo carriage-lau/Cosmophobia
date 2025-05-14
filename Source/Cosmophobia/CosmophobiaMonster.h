@@ -52,11 +52,6 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float VelocityMultiplier = 1.0f;
 
-    /*
-    UFUNCTION()
-    void OnMonsterHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-    */
-
     ACosmophobiaCharacter* GetPlayerCharacter() const;
     mutable ACosmophobiaCharacter* CachedPlayer;
 
@@ -75,28 +70,34 @@ private:
     FTimerHandle PlayerCheckTimerHandle;
 
     // Checks for wall
-    bool CheckForWall();
+    bool CheckForWall(const FVector& Location);
+    
     // Moves to another node at random
     void TraverseGraph();
+    
     // Handles state, replaces former CheckForPlayer
     void HandleState();
-    //pathfinding
+    
+    // Pathfinding
     TArray<AMapNode*> SelectShortestPath(AMapNode* start, AMapNode* target);
-    //movemint
+    
+    // Movemint
     FVector Move(AMapNode* TargetNode, float DeltaTime, float Offset = 50.0f);
-    // States 
+    
+    // States
     virtual void IdleState(float DeltaTime);
     virtual void NodeChaseState(float DeltaTime);
     virtual void DirectChaseState(float DeltaTime);
+    virtual void ValidatePlayerReference();
 
-	virtual void ValidatePlayerReference();
-
-
+    // Markers
     FString state;
     FVector offset;
 
+    // Parameters
     FVector dir;
     float velocity = 750.0f; // Example value
+    float LastHitTimestamp = 0.0f;
 
     FTimerHandle TraverseTimerHandle;
 };

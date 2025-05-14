@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CosmophobiaMonster.h"
@@ -27,10 +27,36 @@
 #include <Runtime/AIModule/Classes/Perception/AIPerceptionComponent.h>
 
 //helper random number generator
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 int get(int l, int r) {
-	return uniform_int_distribution<int>(l, r)(rng);
+    return std::uniform_int_distribution<int>(l, r)(rng);
+}
+
+ACosmophobiaCharacter* ACosmophobiaMonster::GetPlayerCharacter() const
+{
+    // Return cached player if valid
+    if (CachedPlayer && CachedPlayer->IsValidLowLevelFast())
+    {
+        return CachedPlayer;
+    }
+
+    // Cache is invalid, find player fresh
+    CachedPlayer = nullptr;
+
+    // Method 1: Preferred - Iterate through player controllers
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (APlayerController* PlayerController = It->Get())
+        {
+            if (ACosmophobiaCharacter* PlayerChar = Cast<ACosmophobiaCharacter>(PlayerController->GetPawn()))
+            {
+                CachedPlayer = PlayerChar;
+                return CachedPlayer;
+            }
+        }
+    }
+    return CachedPlayer;
 }
 
 ACosmophobiaCharacter* ACosmophobiaMonster::GetPlayerCharacter() const
@@ -73,9 +99,13 @@ void ACosmophobiaMonster::PopulateNodesList() {
 // Sets default values
 ACosmophobiaMonster::ACosmophobiaMonster()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
     TargetNode = nullptr;
+
+    /**
+     *  This single constructor took over 2 weeks to figure out
+     *  Top 5 reasons no one ever should use Unoptimised Engine 5    **/
 
     //test params
     GetCapsuleComponent()->InitCapsuleSize(24.f, 80.f);
@@ -112,29 +142,17 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     offset = FVector::ZeroVector;
 }
 
-bool ACosmophobiaMonster::CheckForWall() {
-    FVector Start = GetActorLocation();
-    FVector End = Start + GetActorForwardVector() * 100;
-    FHitResult HitResult;
-    FCollisionQueryParams QueryParams;
-    QueryParams.AddIgnoredActor(this);
-    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams)) {
-        return true;
-    }
-    return false;
-}
-
 TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapNode* target) {
     using namespace std;
 
-    // Priority queue to store nodes based on cost
+    // Priority queue to store nodes based on their weighted cost
     priority_queue<FNodeCost, vector<FNodeCost>, greater<FNodeCost>> PriorityQueue;
 
     // Maps to store optimal costs and previous nodes
     TMap<AMapNode*, float> OptimalCosts;
     TMap<AMapNode*, AMapNode*> PriorNode;
 
-    // Initialize start node
+    // Initialize the start node
     OptimalCosts[start] = 0.0f;
     PriorityQueue.push(FNodeCost{ start, 0.0f });
 
@@ -144,7 +162,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
         float CurrentCost = PriorityQueue.top().Cost;
         PriorityQueue.pop();
 
-        // If we reach the target, reconstruct the path
+        // Reconstruct the path if the target has been reached -- end condition
         if (Current == target) {
             TArray<AMapNode*> Path;
             AMapNode* PathNode = target;
@@ -162,7 +180,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
             float EdgeCost = FVector::Dist(Current->GetActorLocation(), ConnectedNode->GetActorLocation());
             float NetCost = CurrentCost + EdgeCost;
 
-            // Update cost if a better path is found
+            // Update cost if more optimal path has been determined.
             if (!OptimalCosts.Contains(ConnectedNode) || NetCost < OptimalCosts[ConnectedNode]) {
                 OptimalCosts[ConnectedNode] = NetCost;
                 PriorNode[ConnectedNode] = Current;
@@ -171,7 +189,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
         }
     }
 
-    // If no path is found, return an empty array
+    // Returns an empty array if there is no path.
     return TArray<AMapNode*>();
 }
 
@@ -202,7 +220,7 @@ void ACosmophobiaMonster::HandleState()
             FVector(0,0,50),    // Chest level
             FVector(0,0,20)     // Foot level
         };
-
+      
         for (const FVector& Offset : TracePoints)
         {
             FVector Start = GetActorLocation() + Offset;
@@ -235,7 +253,7 @@ void ACosmophobiaMonster::HandleState()
         }
         else
         {
-            state = (DistanceToPlayer <= DetectionRadius) ? "node chase" : "idle"; // broken rn
+            state = (DistanceToPlayer <= DetectionRadius) ? "node chase" : "idle";
         }
     }
 }
@@ -405,64 +423,8 @@ void ACosmophobiaMonster::Tick(float DeltaTime) {
     }
 }
 
-/*
-void ACosmophobiaMonster::OnMonsterHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-    if (!OtherComp || !OtherActor || OtherActor == this) return;
 
-	if (HitComp != GetMesh()) return;
-
-    if (ACosmophobiaCharacter* PlayerChar = Cast<ACosmophobiaCharacter>(OtherActor))
-    {
-        // Skip if the hit is with the player's capsule component
-        if (OtherComp->IsA<UCapsuleComponent>() && OtherActor->IsA<ACosmophobiaCharacter>())
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Hit detected on player component: %s"), *OtherComp->GetName());
-            return;
-        }
-
-        // Skip if the hit is with the monster's capsule component
-        if (OtherComp->IsA<UCapsuleComponent>())
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Hit detected on monster component: %s"), *OtherComp->GetName());
-            return;
-        }
-        
-        // Debug which component was hit
-        FString HitComponentName = OtherComp ? OtherComp->GetName() : "NULL";
-        UE_LOG(LogTemp, Warning, TEXT("Hit detected on component: %s"), *HitComponentName);
-
-        if (OtherComp) {
-            UE_LOG(LogTemp, Warning, TEXT("Hit component: %s"), *OtherComp->GetName());
-            UE_LOG(LogTemp, Warning, TEXT("Component tags:"));
-            for (const FName& Tag : OtherComp->ComponentTags) {
-                UE_LOG(LogTemp, Warning, TEXT("- %s"), *Tag.ToString());
-            }
-        }
-
-        // Tag-based detection (most reliable)
-        if (OtherComp->ComponentTags.Contains("Head"))
-        {
-            PlayerChar->DamageHandler(EDamageType::Head);
-            UE_LOG(LogTemp, Warning, TEXT("HEAD SHOT!"));
-        }
-        else if (OtherComp->ComponentTags.Contains("Torso"))
-        {
-            PlayerChar->DamageHandler(EDamageType::Torso);
-            UE_LOG(LogTemp, Warning, TEXT("TORSO HIT!"));
-        }
-        else if (OtherComp->ComponentTags.Contains("Arm")) {
-            PlayerChar->DamageHandler(EDamageType::Arm);
-            UE_LOG(LogTemp, Warning, TEXT("ARM HIT!"));
-        }
-        else if (OtherComp->ComponentTags.Contains("Leg")) {
-            PlayerChar->DamageHandler(EDamageType::Leg);
-            UE_LOG(LogTemp, Warning, TEXT("LEG HIT!"));
-        }
-    }
-}
-*/
-
+/** Handles collision with the player.*/
 void ACosmophobiaMonster::OnMonsterOverlap(
     UPrimitiveComponent* OverlappedComp,
     AActor* OtherActor,
@@ -473,6 +435,8 @@ void ACosmophobiaMonster::OnMonsterOverlap(
 ) {
     if (!OtherActor || OtherActor == this || !OtherComp)
         return;
+    
+    if (FMath::Abs(GetWorld()->GetTimeSeconds() - LastHitTimestamp) < 2.0f) return;
 
     if (auto* Player = Cast<ACosmophobiaCharacter>(OtherActor)) {
         // Use the same tag‑checking logic:
@@ -492,5 +456,47 @@ void ACosmophobiaMonster::OnMonsterOverlap(
             Player->DamageHandler(EDamageType::Leg);
             UE_LOG(LogTemp, Warning, TEXT("LEG HIT!"));
         }
+        
+        // Post hit functionality: resets the iframe timer, and also gets a new monster location to ensure that it stops chasing the player.
+        LastHitTimestamp = GetWorld()->GetTimeSeconds(); // sets a new hit timestamp
+        
+        FVector CurrentMonsterLocation = GetActorLocation();
+        const int AttemptCount = 100;
+        const float DistanceTolerance = 500.0f;
+        for(int i = 0; i < AttemptCount; ++i){
+            int32 index = FMath::RandRange(0, NodesList.Num() - 1);
+            AMapNode* TeleportNode = NodesList[index];
+            
+            FVector TargetLocation = TeleportNode->GetActorLocation();
+            float Distance = FVector::Dist(CurrentMonsterLocation, TargetLocation);
+            if(Distance > DistanceTolerance){
+                SetActorLocation(TargetLocation);
+                UE_LOG(LogTemp, Warning, TEXT("Successfully teleported!"), index, Distance);
+                return;
+            }
+        }
+        UE_LOG(LogTemp, Warning, TEXT("No teleport location has been found."));
+        
+        // TODO: make a spawn location for the monster, default behaviour is to TP back to spawn.
     }
+}
+
+
+/** Sweeps a designated teleport location to check for a wall*/
+bool ACosmophobiaMonster::CheckForWall(const FVector& Location) {
+    const float Tolerance = 5.0f;
+    FCollisionShape CollisionShape = FCollisionShape::MakeSphere(Tolerance);
+    
+    // Starts the sweep check, simple sphere check with radius tolerance
+    FHitResult HitResult;
+    bool bHit = GetWorld()->SweepSingleByChannel(
+        HitResult,
+        Location,
+        Location,
+        FQuat::Identity,
+        ECC_WorldStatic, // sweep? visibility also works, but testing for this is better.
+        CollisionShape
+    );
+    
+    return bHit;
 }

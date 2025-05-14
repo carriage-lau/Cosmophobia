@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CoreMinimal.h" 
+#include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
@@ -33,8 +33,8 @@ public:
     void UpdateMovementSpeed();
     void SetLegDisabled(bool bDisabled);
     void StartSprint();
-    void StopSprint(); 
-    void StartSneak(); 
+    void StopSprint();
+    void StartSneak();
     void StopSneak();
     void ModifyHealth(float Delta);
 
@@ -43,7 +43,7 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-	// hitbox?
+    // hitbox?
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
     UCapsuleComponent* HeadCollision;
 
@@ -108,6 +108,12 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
     USkeletalMeshComponent* Mesh1P;
+    
+    UPROPERTY(EditAnywhere, Category = "PostProcess")
+    UMaterialInterface* BasePostProcessingMaterial;
+    
+    UPROPERTY()
+    UMaterialInstanceDynamic* DynMat;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* SprintAction;
@@ -117,6 +123,9 @@ protected:
     
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* PauseGameAction;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<class UDeathScreenWidget> DeathScreenWidgetClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
     float SprintMultiplier = 1.5f;
