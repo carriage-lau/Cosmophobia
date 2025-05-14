@@ -62,10 +62,13 @@ void AMazeGenerator::GenerateMaze(){
                 if(MazeGrid[x][y] != 0){
                     UE_LOG(LogTemp, Warning, TEXT("Generated a maze cell."));
                     AStaticMeshActor* Wall = GetWorld()->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
-                    if (Wall && CubeMesh) {
+                    UMaterialInterface* FuturisticMat = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold"));
+
+                    if (Wall && CubeMesh && FuturisticMat) {
                         Wall->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
                         Wall->GetStaticMeshComponent()->SetWorldScale3D(FVector(3.0f));
                         Wall->SetMobility(EComponentMobility::Static);
+                        Wall->GetStaticMeshComponent()->SetMaterial(0, FuturisticMat);
                         Wall->Tags.Add(FName("MazeWallCube"));
                     }
                 }
@@ -74,7 +77,7 @@ void AMazeGenerator::GenerateMaze(){
                     AMapNode* Node = GetWorld()->SpawnActor<AMapNode>(AMapNode::StaticClass(), NodeLocation, FRotator::ZeroRotator);
                     
                     // Adds lighting
-                    FVector LightLocation = NodeLocation + FVector(0, 0, 200); // Offset up for visibility
+                    FVector LightLocation = NodeLocation + FVector(0, 0, 130); // Offset up for visibility
                     APointLight* Light = GetWorld()->SpawnActor<APointLight>(LightLocation, FRotator::ZeroRotator);
                     
                     if (Light)
@@ -82,8 +85,8 @@ void AMazeGenerator::GenerateMaze(){
                         Light->SetMobility(EComponentMobility::Movable);
                         if (Light->PointLightComponent)
                         {
-                            Light->PointLightComponent->SetLightColor(FLinearColor(1.0f, 0.9f, 0.7f));
-                            Light->PointLightComponent->SetIntensity(3000.f);
+                            Light->PointLightComponent->SetLightColor(FLinearColor(2.0f, 0.9f, 0.7f));
+                            Light->PointLightComponent->SetIntensity(2000.f);
                             Light->PointLightComponent->SetAttenuationRadius(400.f);
                         }
                     }
