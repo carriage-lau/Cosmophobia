@@ -1,4 +1,5 @@
-// There is no copyright because you suck
+// Fill out your copyright notice in the Description page of Project Settings.
+
 
 #include "CosmophobiaMonster.h"
 #include "CosmophobiaCharacter.h"
@@ -8,7 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/SkeletalMeshComponent.h" // for mesh-based detection
-#include "Engine/SkeletalMeshSocket.h" // for bone-based detection
+#include "Engine/SkeletalMeshSocket.h" // For bone-based detection
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -16,7 +17,6 @@
 #include "EngineUtils.h"
 #include "AIController.h"
 #include "TimerManager.h"
-#include "MazeGenerator.h"
 #include <random>
 #include <queue>
 #include <vector>
@@ -77,6 +77,13 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     PrimaryActorTick.bCanEverTick = true;
     TargetNode = nullptr;
 
+    /**
+     *  This single constructor took over 2 weeks to figure out
+     *  Top 5 reasons no one ever should use Unoptimised Engine 5
+     *  Useless fucking shit
+     *  Fuck Epic
+    **/
+
     //test params
     GetCapsuleComponent()->InitCapsuleSize(24.f, 80.f);
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -103,7 +110,9 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     GetCharacterMovement()->SetPlaneConstraintEnabled(false); // Ensure no plane constraints
 
     GetMesh()->OnComponentBeginOverlap.AddDynamic(this, &ACosmophobiaMonster::OnMonsterOverlap);
-    
+    // GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
+    // GetMesh()->OnComponentHit.AddDynamic(this, &ACosmophobiaMonster::OnMonsterHit);
+
     // Initialize other variables
     DetectionRadius = 500.0f;
     state = "idle";
@@ -113,14 +122,14 @@ ACosmophobiaMonster::ACosmophobiaMonster()
 TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapNode* target) {
     using namespace std;
 
-    // Priority queue to store nodes based on cost
+    // Priority queue to store nodes based on their weighted cost
     priority_queue<FNodeCost, vector<FNodeCost>, greater<FNodeCost>> PriorityQueue;
 
     // Maps to store optimal costs and previous nodes
     TMap<AMapNode*, float> OptimalCosts;
     TMap<AMapNode*, AMapNode*> PriorNode;
 
-    // Initialize start node
+    // Initialize the start node
     OptimalCosts[start] = 0.0f;
     PriorityQueue.push(FNodeCost{ start, 0.0f });
 
@@ -130,7 +139,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
         float CurrentCost = PriorityQueue.top().Cost;
         PriorityQueue.pop();
 
-        // If we reach the target, reconstruct the path
+        // Reconstruct the path if the target has been reached -- end condition
         if (Current == target) {
             TArray<AMapNode*> Path;
             AMapNode* PathNode = target;
@@ -148,7 +157,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
             float EdgeCost = FVector::Dist(Current->GetActorLocation(), ConnectedNode->GetActorLocation());
             float NetCost = CurrentCost + EdgeCost;
 
-            // Update cost if a better path is found
+            // Update cost if more optimal path has been determined.
             if (!OptimalCosts.Contains(ConnectedNode) || NetCost < OptimalCosts[ConnectedNode]) {
                 OptimalCosts[ConnectedNode] = NetCost;
                 PriorNode[ConnectedNode] = Current;
@@ -157,7 +166,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
         }
     }
 
-    // If no path is found, return an empty array
+    // Returns an empty array if there is no path.
     return TArray<AMapNode*>();
 }
 
@@ -444,7 +453,6 @@ void ACosmophobiaMonster::OnMonsterOverlap(
             }
         }
         UE_LOG(LogTemp, Warning, TEXT("No teleport location has been found."));
-        
         
         // TODO: make a spawn location for the monster, default behaviour is to TP back to spawn.
     }

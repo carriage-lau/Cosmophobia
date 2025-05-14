@@ -123,6 +123,9 @@ protected:
     
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* PauseGameAction;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<class UDeathScreenWidget> DeathScreenWidgetClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
     float SprintMultiplier = 1.5f;

@@ -13,6 +13,8 @@
 #include "Components/SpotLightComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "DeathScreenWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -196,11 +198,6 @@ void ACosmophobiaCharacter::ModifyFearLevel(float NewFearLevel) {
     FearLevel = NewFearLevel;
 }
 
-void ACosmophobiaCharacter::HandleDeath(){
-    // Handle death here
-    
-}
-
 void ACosmophobiaCharacter::SetVelocityMultiplierLevel(float NewVelocityMultiplier) {
     VelocityMultiplier = NewVelocityMultiplier;
 }
@@ -308,9 +305,28 @@ void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
     }
     else{
         DynMat->SetScalarParameterValue("DmgINtensity", 1.0f);
-//      HandleDeath(); 
+        HandleDeath();
         UE_LOG(LogTemp, Warning, TEXT("Dead Player"));
     }
+}
+
+// Kills the player, pauses the game.
+void ACosmophobiaCharacter::HandleDeath() {
+    // Hides the player, disables further UI input.
+    this->SetActorHiddenInGame(true);
+    this->SetActorEnableCollision(false);
+    this->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    
+    UGameplayStatics::SetGamePaused(GetWorld(), true);
+    
+    // Shows the death screen
+    UDeathScreenWidget* DeathWidget = CreateWidget<UDeathScreenWidget>(GetWorld(), DeathScreenWidgetClass);
+    DeathWidget->AddToViewport();
+
+    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    PlayerController->SetInputMode(FInputModeUIOnly());
+    PlayerController->bShowMouseCursor = true;
+    DeathWidget->SetKeyboardFocus();
 }
 
 void ACosmophobiaCharacter::StartSprint()
