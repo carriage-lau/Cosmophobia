@@ -10,7 +10,7 @@
 // Sets default values
 AKeyPickup::AKeyPickup()
 {
- 	// perf
+ // perf
     PrimaryActorTick.bCanEverTick = false;
 
     // Create and configure collision sphere
@@ -34,14 +34,14 @@ AKeyPickup::AKeyPickup()
 // Called when the game starts or when spawned
 void AKeyPickup::BeginPlay()
 {
-	Super::BeginPlay();
-	
+Super::BeginPlay();
+
 }
 
 // Called every frame
 void AKeyPickup::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+Super::Tick(DeltaTime);
 
 }
 

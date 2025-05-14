@@ -111,6 +111,9 @@ protected:
     
     UPROPERTY(EditAnywhere, Category = "PostProcess")
     UMaterialInterface* BasePostProcessingMaterial;
+    
+    UPROPERTY()
+    UMaterialInstanceDynamic* DynMat;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* SprintAction;
@@ -120,6 +123,9 @@ protected:
     
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* PauseGameAction;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<class UDeathScreenWidget> DeathScreenWidgetClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
     float SprintMultiplier = 1.5f;

@@ -77,7 +77,7 @@ ACosmophobiaMonster::ACosmophobiaMonster()
     PrimaryActorTick.bCanEverTick = true;
     TargetNode = nullptr;
 
-    /** 
+    /**
      *  This single constructor took over 2 weeks to figure out
      *  Top 5 reasons no one ever should use Unoptimised Engine 5
      *  Useless fucking shit
@@ -122,14 +122,14 @@ ACosmophobiaMonster::ACosmophobiaMonster()
 TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapNode* target) {
     using namespace std;
 
-    // Priority queue to store nodes based on cost
+    // Priority queue to store nodes based on their weighted cost
     priority_queue<FNodeCost, vector<FNodeCost>, greater<FNodeCost>> PriorityQueue;
 
     // Maps to store optimal costs and previous nodes
     TMap<AMapNode*, float> OptimalCosts;
     TMap<AMapNode*, AMapNode*> PriorNode;
 
-    // Initialize start node
+    // Initialize the start node
     OptimalCosts[start] = 0.0f;
     PriorityQueue.push(FNodeCost{ start, 0.0f });
 
@@ -139,7 +139,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
         float CurrentCost = PriorityQueue.top().Cost;
         PriorityQueue.pop();
 
-        // If we reach the target, reconstruct the path
+        // Reconstruct the path if the target has been reached -- end condition
         if (Current == target) {
             TArray<AMapNode*> Path;
             AMapNode* PathNode = target;
@@ -157,7 +157,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
             float EdgeCost = FVector::Dist(Current->GetActorLocation(), ConnectedNode->GetActorLocation());
             float NetCost = CurrentCost + EdgeCost;
 
-            // Update cost if a better path is found
+            // Update cost if more optimal path has been determined.
             if (!OptimalCosts.Contains(ConnectedNode) || NetCost < OptimalCosts[ConnectedNode]) {
                 OptimalCosts[ConnectedNode] = NetCost;
                 PriorNode[ConnectedNode] = Current;
@@ -166,7 +166,7 @@ TArray<AMapNode*> ACosmophobiaMonster::SelectShortestPath(AMapNode* start, AMapN
         }
     }
 
-    // If no path is found, return an empty array
+    // Returns an empty array if there is no path.
     return TArray<AMapNode*>();
 }
 

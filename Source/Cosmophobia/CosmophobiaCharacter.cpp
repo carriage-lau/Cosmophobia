@@ -13,6 +13,8 @@
 #include "Components/SpotLightComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "DeathScreenWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -116,6 +118,7 @@ ACosmophobiaCharacter::ACosmophobiaCharacter() {
     ArmCollisionR->ComponentTags.Add("Arm");
     LegCollisionL->ComponentTags.Add("Leg");
     LegCollisionR->ComponentTags.Add("Leg");
+
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -195,32 +198,6 @@ void ACosmophobiaCharacter::ModifyFearLevel(float NewFearLevel) {
     FearLevel = NewFearLevel;
 }
 
-void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
-{
-    HitsLeft = FMath::Clamp(HitsLeft + Delta, 0, 3);
-    if(HitsLeft == 3){
-        // resets all UI effects
-        UE_LOG(LogTemp, Warning, TEXT("3 Hits Left!"));
-    }
-    else if(HitsLeft == 2){
-        // trigger a red UI effect here
-        UE_LOG(LogTemp, Warning, TEXT("2 Hits Left!"));
-    }
-    else if(HitsLeft == 1){
-        // trigger a bigger red UI effect here
-        UE_LOG(LogTemp, Warning, TEXT("1 Hit Left!"));
-    }
-    else{
-//        HandleDeath(); // TODO: fix
-        UE_LOG(LogTemp, Warning, TEXT("Dead Player"));
-    }
-}
-
-void ACosmophobiaCharacter::HandleDeath(){
-    // Handle death here
-    
-}
-
 void ACosmophobiaCharacter::SetVelocityMultiplierLevel(float NewVelocityMultiplier) {
     VelocityMultiplier = NewVelocityMultiplier;
 }
@@ -252,35 +229,17 @@ void ACosmophobiaCharacter::Tick(float DeltaTime) {
     // Custom tick logic
 }
 
-void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
-    if(DamageType != EDamageType::Head){
-        ModifyHealthLevel(-1);
-        if(DamageType == EDamageType::Torso){
-            if (!TorsoDisabled) SetTorsoDisabled(true);
-            UE_LOG(LogTemp, Warning, TEXT("hit torso"));
-        }
-        else if(DamageType == EDamageType::Arm){
-            if (!ArmDisabled) SetArmDisabled(true);
-            UE_LOG(LogTemp, Warning, TEXT("hit arm"));
-        }
-        else if(DamageType == EDamageType::Leg){
-            if (!LegDisabled) SetLegDisabled(true);
-            UE_LOG(LogTemp, Warning, TEXT("hit leg"));
-        }
-    }
-    else{
-        ModifyHealthLevel(-3);
-        UE_LOG(LogTemp, Warning, TEXT("hit head"));
-    }
-    // Handle damage based on DamageType
-}
-
 void ACosmophobiaCharacter::BeginPlay()
 {
     Super::BeginPlay();
     // Custom BeginPlay logic
     BaseWalkSpeed = StartSpeed;
     UpdateMovementSpeed();
+    
+    // Adds damage indicators
+    DynMat = UMaterialInstanceDynamic::Create(BasePostProcessingMaterial, this);
+    FirstPersonCameraComponent->PostProcessSettings.AddBlendable(DynMat, 1.0f);
+    
     UE_LOG(LogTemp, Warning, TEXT("HeadCollision tags: %d"), HeadCollision->ComponentTags.Num());
     for (const FName& Tag : HeadCollision->ComponentTags) {
         UE_LOG(LogTemp, Warning, TEXT("- Tag: %s"), *Tag.ToString());
@@ -305,6 +264,69 @@ void ACosmophobiaCharacter::BeginPlay()
     for (const FName& Tag : LegCollisionR->ComponentTags) {
         UE_LOG(LogTemp, Warning, TEXT("- Tag: %s"), *Tag.ToString());
     }
+}
+
+void ACosmophobiaCharacter::DamageHandler(EDamageType DamageType) {
+    if(DamageType != EDamageType::Head){
+        ModifyHealthLevel(-1);
+        if(DamageType == EDamageType::Torso){
+            if (!TorsoDisabled) SetTorsoDisabled(true);
+            UE_LOG(LogTemp, Warning, TEXT("hit torso"));
+        }
+        else if(DamageType == EDamageType::Arm){
+            if (!ArmDisabled) SetArmDisabled(true);
+            UE_LOG(LogTemp, Warning, TEXT("hit arm"));
+        }
+        else if(DamageType == EDamageType::Leg){
+            if (!LegDisabled) SetLegDisabled(true);
+            UE_LOG(LogTemp, Warning, TEXT("hit leg"));
+        }
+    }
+    else{
+        ModifyHealthLevel(-3);
+        UE_LOG(LogTemp, Warning, TEXT("hit head"));
+    }
+}
+
+void ACosmophobiaCharacter::ModifyHealthLevel(int Delta)
+{
+    HitsLeft = FMath::Clamp(HitsLeft + Delta, 0, 3);
+    if(HitsLeft == 3){
+        DynMat->SetScalarParameterValue("DmgIntensity", 0.0f);
+        UE_LOG(LogTemp, Warning, TEXT("3 Hits Left!"));
+    }
+    else if(HitsLeft == 2){
+        DynMat->SetScalarParameterValue("DmgIntensity", 0.3f);
+        UE_LOG(LogTemp, Warning, TEXT("2 Hits Left!"));
+    }
+    else if(HitsLeft == 1){
+        DynMat->SetScalarParameterValue("DmgIntensity", 0.6f);
+        UE_LOG(LogTemp, Warning, TEXT("1 Hit Left!"));
+    }
+    else{
+        DynMat->SetScalarParameterValue("DmgINtensity", 1.0f);
+        HandleDeath();
+        UE_LOG(LogTemp, Warning, TEXT("Dead Player"));
+    }
+}
+
+// Kills the player, pauses the game.
+void ACosmophobiaCharacter::HandleDeath() {
+    // Hides the player, disables further UI input.
+    this->SetActorHiddenInGame(true);
+    this->SetActorEnableCollision(false);
+    this->DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    
+    UGameplayStatics::SetGamePaused(GetWorld(), true);
+    
+    // Shows the death screen
+    UDeathScreenWidget* DeathWidget = CreateWidget<UDeathScreenWidget>(GetWorld(), DeathScreenWidgetClass);
+    DeathWidget->AddToViewport();
+
+    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    PlayerController->SetInputMode(FInputModeUIOnly());
+    PlayerController->bShowMouseCursor = true;
+    DeathWidget->SetKeyboardFocus();
 }
 
 void ACosmophobiaCharacter::StartSprint()
