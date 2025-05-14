@@ -1,8 +1,10 @@
 #include "MazeGenerator.h"
 #include "Engine/World.h"
+#include "Engine/PointLight.h"
 #include "EngineUtils.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/PointLightComponent.h"
 #include "MapNode.h"
 #include <vector>
 
@@ -75,11 +77,15 @@ void AMazeGenerator::GenerateMaze(){
                     FVector LightLocation = NodeLocation + FVector(0, 0, 200); // Offset up for visibility
                     APointLight* Light = GetWorld()->SpawnActor<APointLight>(LightLocation, FRotator::ZeroRotator);
                     
-                    if (Light) {
-                        Light->SetMobility(EComponentMobility::Movable); // Or Static for baked lighting
-                        Light->SetLightColor(FLinearColor(1.0f, 0.9f, 0.7f)); // Warm color, tweak if needed
-                        Light->SetIntensity(3000.f); // Tweak to taste
-                        Light->SetAttenuationRadius(400.f); // Size of the light’s influence
+                    if (Light)
+                    {
+                        Light->SetMobility(EComponentMobility::Movable);
+                        if (Light->PointLightComponent)
+                        {
+                            Light->PointLightComponent->SetLightColor(FLinearColor(1.0f, 0.9f, 0.7f));
+                            Light->PointLightComponent->SetIntensity(3000.f);
+                            Light->PointLightComponent->SetAttenuationRadius(400.f);
+                        }
                     }
                 }
             }
