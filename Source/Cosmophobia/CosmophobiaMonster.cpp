@@ -79,10 +79,7 @@ ACosmophobiaMonster::ACosmophobiaMonster()
 
     /**
      *  This single constructor took over 2 weeks to figure out
-     *  Top 5 reasons no one ever should use Unoptimised Engine 5
-     *  Useless fucking shit
-     *  Fuck Epic
-    **/
+     *  Top 5 reasons no one ever should use Unoptimised Engine 5    **/
 
     //test params
     GetCapsuleComponent()->InitCapsuleSize(24.f, 80.f);
@@ -230,7 +227,7 @@ void ACosmophobiaMonster::HandleState()
         }
         else
         {
-            state = (DistanceToPlayer <= DetectionRadius) ? "node chase" : "idle"; // broken rn
+            state = (DistanceToPlayer <= DetectionRadius) ? "node chase" : "idle";
         }
     }
 }

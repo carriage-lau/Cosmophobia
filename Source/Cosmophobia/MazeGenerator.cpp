@@ -70,6 +70,17 @@ void AMazeGenerator::GenerateMaze(){
                 else{
                     FVector NodeLocation = FVector(x * CellSize + 150.0f, y * CellSize + 150.0f, 140);
                     AMapNode* Node = GetWorld()->SpawnActor<AMapNode>(AMapNode::StaticClass(), NodeLocation, FRotator::ZeroRotator);
+                    
+                    // Adds lighting
+                    FVector LightLocation = NodeLocation + FVector(0, 0, 200); // Offset up for visibility
+                    APointLight* Light = GetWorld()->SpawnActor<APointLight>(LightLocation, FRotator::ZeroRotator);
+                    
+                    if (Light) {
+                        Light->SetMobility(EComponentMobility::Movable); // Or Static for baked lighting
+                        Light->SetLightColor(FLinearColor(1.0f, 0.9f, 0.7f)); // Warm color, tweak if needed
+                        Light->SetIntensity(3000.f); // Tweak to taste
+                        Light->SetAttenuationRadius(400.f); // Size of the light’s influence
+                    }
                 }
             }
         }
