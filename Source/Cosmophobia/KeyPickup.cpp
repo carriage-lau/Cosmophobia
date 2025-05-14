@@ -71,6 +71,12 @@ void AKeyPickup::OnOverlapBegin(
             }
         }
 
+        KeyMesh->SetVisibility(false, true);
+
+        CollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+        SetActorTickEnabled(false);
+
         // Destroy
         Destroy();
     }
