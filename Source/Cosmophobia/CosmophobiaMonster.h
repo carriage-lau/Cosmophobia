@@ -52,7 +52,6 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float VelocityMultiplier = 1.0f;
 
-
     ACosmophobiaCharacter* GetPlayerCharacter() const;
     mutable ACosmophobiaCharacter* CachedPlayer;
 
@@ -89,7 +88,6 @@ private:
     virtual void IdleState(float DeltaTime);
     virtual void NodeChaseState(float DeltaTime);
     virtual void DirectChaseState(float DeltaTime);
-
     virtual void ValidatePlayerReference();
 
     // Markers

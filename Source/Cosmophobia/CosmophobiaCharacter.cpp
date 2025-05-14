@@ -118,7 +118,6 @@ ACosmophobiaCharacter::ACosmophobiaCharacter() {
     ArmCollisionR->ComponentTags.Add("Arm");
     LegCollisionL->ComponentTags.Add("Leg");
     LegCollisionR->ComponentTags.Add("Leg");
-
 }
 
 //////////////////////////////////////////////////////////////////////////// Input

@@ -59,6 +59,32 @@ ACosmophobiaCharacter* ACosmophobiaMonster::GetPlayerCharacter() const
     return CachedPlayer;
 }
 
+ACosmophobiaCharacter* ACosmophobiaMonster::GetPlayerCharacter() const
+{
+    // Return cached player if valid
+    if (CachedPlayer && CachedPlayer->IsValidLowLevelFast())
+    {
+        return CachedPlayer;
+    }
+
+    // Cache is invalid, find player fresh
+    CachedPlayer = nullptr;
+
+    // Method 1: Preferred - Iterate through player controllers
+    for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (APlayerController* PlayerController = It->Get())
+        {
+            if (ACosmophobiaCharacter* PlayerChar = Cast<ACosmophobiaCharacter>(PlayerController->GetPawn()))
+            {
+                CachedPlayer = PlayerChar;
+                return CachedPlayer;
+            }
+        }
+    }
+    return CachedPlayer;
+}
+
 //global variables
 TArray<AMapNode*> NodesList;
 
@@ -194,7 +220,7 @@ void ACosmophobiaMonster::HandleState()
             FVector(0,0,50),    // Chest level
             FVector(0,0,20)     // Foot level
         };
-
+      
         for (const FVector& Offset : TracePoints)
         {
             FVector Start = GetActorLocation() + Offset;
